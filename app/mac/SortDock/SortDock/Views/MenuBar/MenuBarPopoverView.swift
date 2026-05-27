@@ -23,14 +23,11 @@ struct MenuBarPopoverView: View {
             Divider()
 
             Button("Open SortDock") {
-                openWindow(id: "main")
-                NSApp.activate(ignoringOtherApps: true)
+                openSortDock()
             }
 
             Button("History") {
-                store.showHistory()
-                openWindow(id: "main")
-                NSApp.activate(ignoringOtherApps: true)
+                openSortDock(showingHistory: true)
             }
 
             Button(store.settings.isSortingEnabled ? "Pause Sorting" : "Resume Sorting") {
@@ -39,5 +36,16 @@ struct MenuBarPopoverView: View {
         }
         .padding(12)
         .frame(width: 300)
+    }
+
+    private func openSortDock(showingHistory: Bool = false) {
+        DockVisibilityCoordinator.showDockIcon()
+
+        if showingHistory {
+            store.showHistory()
+        }
+
+        openWindow(id: "main")
+        DockVisibilityCoordinator.activate()
     }
 }

@@ -11,6 +11,10 @@ struct HistorySheet: View {
                 Text("History")
                     .font(.title3.weight(.semibold))
                 Spacer()
+                Button("Clear History", role: .destructive) {
+                    store.clearHistory()
+                }
+                .disabled(store.activities.isEmpty)
                 Button("Done") {
                     dismiss()
                 }

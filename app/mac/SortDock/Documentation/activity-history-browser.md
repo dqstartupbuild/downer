@@ -13,12 +13,14 @@ The sheet lets a user browse completed and waiting file actions without turning 
 - Failed files can be retried, sent to a chosen folder, or marked left.
 - Ask Later items show the remaining snooze time and can be handled immediately with `Move`, `Choose...`, or `Leave`.
 - Old plain-text history entries still load, but they do not show file actions because older records did not store file paths.
+- `Clear History` removes the visible activity records only. It does not delete, move, or rename any files.
 
 ## Implementation
 
 - `ActivityRecord` stores structured history details: status, file name, source path, current path, destination, and snooze deadline.
 - `ActivityRecordStatus` defines the compact user-facing states.
 - `SortDockStore` owns history actions, Finder reveal, retry moves, custom folder moves, leave updates, and Ask Later task rescheduling.
+- `SortDockStore.clearHistory()` wipes the persisted activity list without touching file paths on disk.
 - `HistorySheet` displays the two-column browser.
 - `HistoryListRowView`, `HistoryDetailView`, `HistoryDetailRowView`, `HistoryActionBarView`, and `HistoryEmptyStateView` keep the sheet split into focused components.
 - `ActivityStatusSymbolView` provides the shared status symbol used by history rows and details.

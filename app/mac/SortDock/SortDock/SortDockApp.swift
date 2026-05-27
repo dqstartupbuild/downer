@@ -12,12 +12,16 @@ struct SortDockApp: App {
     @StateObject private var store = SortDockStore()
 
     var body: some Scene {
-        WindowGroup("SortDock", id: "main") {
+        Window("SortDock", id: "main") {
             MainWindowView()
                 .environmentObject(store)
                 .frame(minWidth: 620, minHeight: 460)
                 .onAppear {
+                    DockVisibilityCoordinator.showDockIcon()
                     store.start()
+                }
+                .onDisappear {
+                    DockVisibilityCoordinator.hideDockIcon()
                 }
         }
         .defaultSize(width: 680, height: 520)

@@ -199,6 +199,11 @@ final class SortDockStore: ObservableObject {
         isHistoryPresented = true
     }
 
+    func clearHistory() {
+        activities = []
+        statusMessage = "History cleared."
+    }
+
     func toggleSorting() {
         settings.isSortingEnabled.toggle()
     }
