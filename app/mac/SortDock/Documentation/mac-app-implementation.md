@@ -14,6 +14,10 @@ The app watches a user-selected folder, waits for new files to finish downloadin
 - `Services/` contains folder access, file watching, moving, conflict handling, login item control, and persistence.
 - `Views/` contains one focused SwiftUI component per file.
 
+## Main Window Layout
+
+The main window keeps the status strip and latest activity line fixed. The two-column control area scrolls vertically, so routing rules, behavior controls, and appearance controls remain reachable when the window is compact or when the user has many folders and rules.
+
 ## Folder Access
 
 The app is sandboxed. When the user picks a watch folder, SortDock stores a security-scoped app bookmark so it can keep watching that folder across launches.

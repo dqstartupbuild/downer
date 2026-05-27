@@ -11,27 +11,30 @@ struct MainWindowView: View {
         VStack(spacing: 0) {
             StatusStripView()
             Divider()
-            HStack(alignment: .top, spacing: 16) {
-                VStack(alignment: .leading, spacing: 16) {
-                    WatchFolderPanel()
-                    DestinationListView(
-                        onAdd: openAddDestination,
-                        onRename: openRenameDestination
-                    )
-                }
-                .frame(width: 220)
+            ScrollView(.vertical) {
+                HStack(alignment: .top, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        WatchFolderPanel()
+                        DestinationListView(
+                            onAdd: openAddDestination,
+                            onRename: openRenameDestination
+                        )
+                    }
+                    .frame(width: 220)
 
-                VStack(alignment: .leading, spacing: 16) {
-                    RoutingRailView(
-                        onAddRule: openAddRule,
-                        onEditRule: openEditRule
-                    )
-                    BehaviorSettingsView()
-                    AppearanceSettingsView()
+                    VStack(alignment: .leading, spacing: 16) {
+                        RoutingRailView(
+                            onAddRule: openAddRule,
+                            onEditRule: openEditRule
+                        )
+                        BehaviorSettingsView()
+                        AppearanceSettingsView()
+                    }
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
                 }
+                .padding(16)
                 .frame(maxWidth: .infinity, alignment: .topLeading)
             }
-            .padding(16)
             Divider()
             ActivityStatusLine()
         }
