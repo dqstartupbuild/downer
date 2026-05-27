@@ -1,0 +1,233 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif: var(--font-display), Georgia, serif;
+}
+
+:root {
+  --window: #f7faff;
+  --panel: #ffffff;
+  --panel-raised: #f1f6ff;
+
+  --ink: #142033;
+  --ink-muted: #6b7a90;
+  --ink-on-accent: #ffffff;
+
+  --line: #dce8f7;
+  --line-strong: #bfd8ff;
+
+  --accent: #2f7bff;
+  --accent-deep: #1554e8;
+  --accent-soft: #eaf3ff;
+  --accent-glow: #4e9efa;
+
+  --routing-rail: #2f7bff;
+  --routing-rail-soft: #bfd8ff;
+  --routing-rail-dark: #1554e8;
+
+  --tag-bg: #eaf3ff;
+  --tag-border: #bfd8ff;
+  --tag-text: #1554e8;
+
+  --button-primary-start: #4e9efa;
+  --button-primary-end: #2f6ded;
+  --button-primary-pressed: #1554e8;
+
+  --dock: #e8edf3;
+  --dock-shadow: rgba(34, 78, 145, 0.16);
+
+  --active: #2ebe73;
+  --warning: #f2b84b;
+  --danger: #ef5350;
+  --focus: #4e9efa;
+
+  --nav-bg: rgba(255, 255, 255, 0.74);
+  --nav-border: rgba(220, 232, 247, 0.82);
+  --hero-backdrop:
+    radial-gradient(circle at 78% 28%, rgba(78, 158, 250, 0.2), transparent 31%),
+    linear-gradient(135deg, #f7faff 0%, #eaf3ff 48%, #ffffff 100%);
+  --hero-scrim:
+    linear-gradient(90deg, rgba(247, 250, 255, 0.94) 0%, rgba(247, 250, 255, 0.75) 38%, rgba(247, 250, 255, 0.14) 72%, rgba(247, 250, 255, 0) 100%),
+    linear-gradient(0deg, rgba(247, 250, 255, 0.82) 0%, rgba(247, 250, 255, 0) 34%);
+  --section-tint: linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
+  --surface-glow: rgba(78, 158, 250, 0.18);
+  --shadow-soft: rgba(20, 32, 51, 0.12);
+}
+
+[data-theme="dark"] {
+  --window: #050718;
+  --panel: #0d1324;
+  --panel-raised: #151d33;
+
+  --ink: #eaf3ff;
+  --ink-muted: #8fa4c1;
+  --ink-on-accent: #ffffff;
+
+  --line: #25314a;
+  --line-strong: #344669;
+
+  --accent: #2f6ded;
+  --accent-deep: #0733ba;
+  --accent-soft: #132c66;
+  --accent-glow: #4e9efa;
+
+  --routing-rail: #2f6ded;
+  --routing-rail-soft: #4e9efa;
+  --routing-rail-dark: #0733ba;
+
+  --tag-bg: #132c66;
+  --tag-border: #344669;
+  --tag-text: #eaf3ff;
+
+  --button-primary-start: #4e9efa;
+  --button-primary-end: #2f6ded;
+  --button-primary-pressed: #0733ba;
+
+  --dock: #101522;
+  --dock-shadow: rgba(0, 0, 0, 0.42);
+
+  --active: #35d486;
+  --warning: #f2b84b;
+  --danger: #ff6262;
+  --focus: #4e9efa;
+
+  --nav-bg: rgba(13, 19, 36, 0.78);
+  --nav-border: rgba(52, 70, 105, 0.8);
+  --hero-backdrop:
+    radial-gradient(circle at 78% 28%, rgba(78, 158, 250, 0.24), transparent 31%),
+    linear-gradient(135deg, #050718 0%, #0d1324 48%, #101522 100%);
+  --hero-scrim:
+    linear-gradient(90deg, rgba(5, 7, 24, 0.96) 0%, rgba(5, 7, 24, 0.78) 38%, rgba(5, 7, 24, 0.18) 72%, rgba(5, 7, 24, 0) 100%),
+    linear-gradient(0deg, rgba(5, 7, 24, 0.84) 0%, rgba(5, 7, 24, 0) 34%);
+  --section-tint: linear-gradient(180deg, #0d1324 0%, #050718 100%);
+  --surface-glow: rgba(78, 158, 250, 0.22);
+  --shadow-soft: rgba(0, 0, 0, 0.36);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --window: #050718;
+    --panel: #0d1324;
+    --panel-raised: #151d33;
+
+    --ink: #eaf3ff;
+    --ink-muted: #8fa4c1;
+    --ink-on-accent: #ffffff;
+
+    --line: #25314a;
+    --line-strong: #344669;
+
+    --accent: #2f6ded;
+    --accent-deep: #0733ba;
+    --accent-soft: #132c66;
+    --accent-glow: #4e9efa;
+
+    --routing-rail: #2f6ded;
+    --routing-rail-soft: #4e9efa;
+    --routing-rail-dark: #0733ba;
+
+    --tag-bg: #132c66;
+    --tag-border: #344669;
+    --tag-text: #eaf3ff;
+
+    --button-primary-start: #4e9efa;
+    --button-primary-end: #2f6ded;
+    --button-primary-pressed: #0733ba;
+
+    --dock: #101522;
+    --dock-shadow: rgba(0, 0, 0, 0.42);
+
+    --active: #35d486;
+    --warning: #f2b84b;
+    --danger: #ff6262;
+    --focus: #4e9efa;
+
+    --nav-bg: rgba(13, 19, 36, 0.78);
+    --nav-border: rgba(52, 70, 105, 0.8);
+    --hero-backdrop:
+      radial-gradient(circle at 78% 28%, rgba(78, 158, 250, 0.24), transparent 31%),
+      linear-gradient(135deg, #050718 0%, #0d1324 48%, #101522 100%);
+    --hero-scrim:
+      linear-gradient(90deg, rgba(5, 7, 24, 0.96) 0%, rgba(5, 7, 24, 0.78) 38%, rgba(5, 7, 24, 0.18) 72%, rgba(5, 7, 24, 0) 100%),
+      linear-gradient(0deg, rgba(5, 7, 24, 0.84) 0%, rgba(5, 7, 24, 0) 34%);
+    --section-tint: linear-gradient(180deg, #0d1324 0%, #050718 100%);
+    --surface-glow: rgba(78, 158, 250, 0.22);
+    --shadow-soft: rgba(0, 0, 0, 0.36);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--window);
+  color: var(--ink);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--window);
+  color: var(--ink);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+@keyframes product-settle {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes rail-draw {
+  from {
+    opacity: 0.36;
+    transform: scaleX(0);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
