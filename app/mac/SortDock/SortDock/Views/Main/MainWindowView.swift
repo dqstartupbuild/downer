@@ -47,6 +47,10 @@ struct MainWindowView: View {
             DestinationEditorSheet(destination: destinationEditorDestination)
                 .environmentObject(store)
         }
+        .sheet(isPresented: $store.isHistoryPresented) {
+            HistorySheet()
+                .environmentObject(store)
+        }
     }
 
     private func openAddDestination() {

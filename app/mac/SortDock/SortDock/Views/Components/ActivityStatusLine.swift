@@ -11,6 +11,10 @@ struct ActivityStatusLine: View {
                 .lineLimit(1)
                 .foregroundStyle(DesignTokens.mutedText)
             Spacer()
+            Button("History") {
+                store.showHistory()
+            }
+            .buttonStyle(.borderless)
         }
         .font(.footnote)
         .padding(.horizontal, 16)

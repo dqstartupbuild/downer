@@ -27,6 +27,12 @@ struct MenuBarPopoverView: View {
                 NSApp.activate(ignoringOtherApps: true)
             }
 
+            Button("History") {
+                store.showHistory()
+                openWindow(id: "main")
+                NSApp.activate(ignoringOtherApps: true)
+            }
+
             Button(store.settings.isSortingEnabled ? "Pause Sorting" : "Resume Sorting") {
                 store.toggleSorting()
             }

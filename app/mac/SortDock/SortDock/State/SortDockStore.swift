@@ -9,6 +9,8 @@ final class SortDockStore: ObservableObject {
         }
     }
 
+    @Published var isHistoryPresented = false
+
     @Published var destinations: [DestinationFolder] {
         didSet {
             persist()
@@ -39,6 +41,7 @@ final class SortDockStore: ObservableObject {
     private var folderAccess: FolderAccess?
     private var knownFilePaths = Set<String>()
     private var scanTask: Task<Void, Never>?
+    private var snoozeTasks: [UUID: Task<Void, Never>] = [:]
     private var watcher: FolderWatcher?
 
     init() {
@@ -189,10 +192,104 @@ final class SortDockStore: ObservableObject {
         updateLoginItem()
         resolveFolderAccess()
         restartWatcher(resetKnownFiles: true)
+        resumeWaitingActivities()
+    }
+
+    func showHistory() {
+        isHistoryPresented = true
     }
 
     func toggleSorting() {
         settings.isSortingEnabled.toggle()
+    }
+
+    func canChooseFolderForActivity(_ activity: ActivityRecord) -> Bool {
+        activity.status != .moved && existingFileURL(for: activity) != nil
+    }
+
+    func canLeaveActivity(_ activity: ActivityRecord) -> Bool {
+        guard existingFileURL(for: activity) != nil else {
+            return false
+        }
+
+        return activity.status == .waiting || activity.status == .failed
+    }
+
+    func canMoveActivity(_ activity: ActivityRecord) -> Bool {
+        guard activity.status != .moved,
+              existingFileURL(for: activity) != nil
+        else {
+            return false
+        }
+
+        return suggestedDestination(for: activity) != nil
+    }
+
+    func canRevealActivity(_ activity: ActivityRecord) -> Bool {
+        existingFileURL(for: activity) != nil
+    }
+
+    func chooseFolderForActivity(_ activity: ActivityRecord) {
+        guard let fileURL = existingFileURL(for: activity) else {
+            statusMessage = "Could not find \(activity.fileName ?? "that file")."
+            return
+        }
+
+        guard let folderURL = promptCoordinator.chooseFolder() else {
+            return
+        }
+
+        cancelSnooze(for: activity.id)
+        let destination = DestinationFolder(name: folderURL.lastPathComponent)
+        performMove(
+            fileURL: fileURL,
+            destination: destination,
+            customFolderURL: folderURL,
+            activityID: activity.id
+        )
+    }
+
+    func leaveActivity(_ activity: ActivityRecord) {
+        guard let fileURL = existingFileURL(for: activity) else {
+            statusMessage = "Could not find \(activity.fileName ?? "that file")."
+            return
+        }
+
+        cancelSnooze(for: activity.id)
+        recordLeft(
+            fileURL: fileURL,
+            destination: suggestedDestination(for: activity),
+            activityID: activity.id
+        )
+        statusMessage = "Left \(fileURL.lastPathComponent)."
+    }
+
+    func moveActivity(_ activity: ActivityRecord) {
+        guard let fileURL = existingFileURL(for: activity) else {
+            statusMessage = "Could not find \(activity.fileName ?? "that file")."
+            return
+        }
+
+        guard let destination = suggestedDestination(for: activity) else {
+            statusMessage = "Choose where \(fileURL.lastPathComponent) should go."
+            return
+        }
+
+        cancelSnooze(for: activity.id)
+        performMove(fileURL: fileURL, destination: destination, activityID: activity.id)
+    }
+
+    func revealActivity(_ activity: ActivityRecord) {
+        guard let fileURL = existingFileURL(for: activity) else {
+            statusMessage = "Could not find \(activity.fileName ?? "that file")."
+            return
+        }
+
+        NSWorkspace.shared.activateFileViewerSelecting([fileURL])
+    }
+
+    func suggestedDestinationName(for activity: ActivityRecord) -> String? {
+        suggestedDestination(for: activity)?.name ?? activity.destinationName
     }
 
     private func cleanDestinationName(_ rawName: String) -> String {
@@ -234,6 +331,31 @@ final class SortDockStore: ObservableObject {
         return defaultDestination()
     }
 
+    private func cancelSnooze(for activityID: UUID) {
+        snoozeTasks[activityID]?.cancel()
+        snoozeTasks[activityID] = nil
+    }
+
+    private func existingFileURL(for activity: ActivityRecord) -> URL? {
+        [activity.currentPath, activity.sourcePath]
+            .compactMap { $0 }
+            .map { URL(fileURLWithPath: $0) }
+            .first { fileManager.fileExists(atPath: $0.path) }
+    }
+
+    private func suggestedDestination(for activity: ActivityRecord) -> DestinationFolder? {
+        if let destinationID = activity.destinationID,
+           let destination = destinations.first(where: { $0.id == destinationID }) {
+            return destination
+        }
+
+        guard let fileURL = existingFileURL(for: activity) else {
+            return nil
+        }
+
+        return destination(for: fileURL)
+    }
+
     private func handleSettingsChange(oldValue: SortDockSettings) {
         if settings.appearanceMode != oldValue.appearanceMode {
             AppearanceCoordinator.apply(settings.appearanceMode)
@@ -251,16 +373,27 @@ final class SortDockStore: ObservableObject {
         }
     }
 
-    private func performMove(fileURL: URL, destination: DestinationFolder, customFolderURL: URL? = nil) {
+    private func performMove(
+        fileURL: URL,
+        destination: DestinationFolder,
+        customFolderURL: URL? = nil,
+        activityID: UUID? = nil
+    ) {
         let destinationFolderURL = customFolderURL
             ?? mover.destinationURL(for: destination, watchedFolderURL: watchedFolderURL)
 
         do {
-            _ = try mover.move(fileURL: fileURL, to: destinationFolderURL)
-            recordActivity("Moved \(fileURL.lastPathComponent) to \(destinationFolderURL.lastPathComponent).")
+            let movedURL = try mover.move(fileURL: fileURL, to: destinationFolderURL)
+            recordMoved(
+                originalURL: fileURL,
+                movedURL: movedURL,
+                destination: destination,
+                destinationFolderURL: destinationFolderURL,
+                activityID: activityID
+            )
             statusMessage = "Moved \(fileURL.lastPathComponent)."
         } catch {
-            recordActivity("Could not move \(fileURL.lastPathComponent).")
+            recordFailed(fileURL: fileURL, destination: destination, activityID: activityID)
             statusMessage = "Could not move \(fileURL.lastPathComponent)."
         }
     }
@@ -276,19 +409,22 @@ final class SortDockStore: ObservableObject {
         )
     }
 
-    private func processFile(_ fileURL: URL) {
+    private func processFile(_ fileURL: URL, activityID: UUID? = nil) {
         guard fileManager.fileExists(atPath: fileURL.path) else {
+            if let activityID {
+                recordMissing(fileURL: fileURL, activityID: activityID)
+            }
             return
         }
 
         guard let destination = destination(for: fileURL) else {
-            recordActivity("Left \(fileURL.lastPathComponent) in \(watchedFolderURL.lastPathComponent).")
+            recordLeft(fileURL: fileURL, destination: nil, activityID: activityID)
             return
         }
 
         switch settings.moveBehavior {
         case .autoMove:
-            performMove(fileURL: fileURL, destination: destination)
+            performMove(fileURL: fileURL, destination: destination, activityID: activityID)
         case .askFirst:
             let choice = promptCoordinator.askForMove(
                 fileName: fileURL.lastPathComponent,
@@ -299,25 +435,96 @@ final class SortDockStore: ObservableObject {
 
             switch choice {
             case .move:
-                performMove(fileURL: fileURL, destination: destination)
+                performMove(fileURL: fileURL, destination: destination, activityID: activityID)
             case .chooseFolder:
                 if let folderURL = promptCoordinator.chooseFolder() {
-                    performMove(fileURL: fileURL, destination: destination, customFolderURL: folderURL)
+                    performMove(
+                        fileURL: fileURL,
+                        destination: destination,
+                        customFolderURL: folderURL,
+                        activityID: activityID
+                    )
                 }
             case .leave:
-                recordActivity("Left \(fileURL.lastPathComponent) in \(watchedFolderURL.lastPathComponent).")
+                recordLeft(fileURL: fileURL, destination: destination, activityID: activityID)
             case .askLater:
-                scheduleAskLater(fileURL)
+                scheduleAskLater(fileURL, destination: destination, activityID: activityID)
             }
         }
     }
 
-    private func recordActivity(_ message: String) {
-        activities.insert(ActivityRecord(message: message), at: 0)
+    private func recordFailed(fileURL: URL, destination: DestinationFolder?, activityID: UUID?) {
+        let recordID = activityID ?? UUID()
+        let record = ActivityRecord(
+            id: recordID,
+            message: "Could not move \(fileURL.lastPathComponent).",
+            status: .failed,
+            fileName: fileURL.lastPathComponent,
+            sourcePath: fileURL.path,
+            currentPath: fileURL.path,
+            destinationID: destination?.id,
+            destinationName: destination?.name
+        )
 
-        if activities.count > 20 {
-            activities = Array(activities.prefix(20))
-        }
+        upsertActivity(record)
+    }
+
+    private func recordLeft(fileURL: URL, destination: DestinationFolder?, activityID: UUID?) {
+        let recordID = activityID ?? UUID()
+        let record = ActivityRecord(
+            id: recordID,
+            message: "Left \(fileURL.lastPathComponent) in \(watchedFolderURL.lastPathComponent).",
+            status: .left,
+            fileName: fileURL.lastPathComponent,
+            sourcePath: fileURL.path,
+            currentPath: fileURL.path,
+            destinationID: destination?.id,
+            destinationName: destination?.name
+        )
+
+        upsertActivity(record)
+    }
+
+    private func recordMissing(fileURL: URL, activityID: UUID) {
+        let record = ActivityRecord(
+            id: activityID,
+            message: "Could not find \(fileURL.lastPathComponent).",
+            status: .failed,
+            fileName: fileURL.lastPathComponent,
+            sourcePath: fileURL.path,
+            currentPath: fileURL.path
+        )
+
+        upsertActivity(record)
+    }
+
+    private func recordMoved(
+        originalURL: URL,
+        movedURL: URL,
+        destination: DestinationFolder,
+        destinationFolderURL: URL,
+        activityID: UUID?
+    ) {
+        let recordID = activityID ?? UUID()
+        let destinationID = destinations.contains { $0.id == destination.id } ? destination.id : nil
+        let record = ActivityRecord(
+            id: recordID,
+            message: "Moved \(originalURL.lastPathComponent) to \(destinationFolderURL.lastPathComponent).",
+            status: .moved,
+            fileName: originalURL.lastPathComponent,
+            sourcePath: originalURL.path,
+            currentPath: movedURL.path,
+            destinationID: destinationID,
+            destinationName: destinationFolderURL.lastPathComponent
+        )
+
+        upsertActivity(record)
+    }
+
+    private func upsertActivity(_ record: ActivityRecord) {
+        var updatedActivities = activities.filter { $0.id != record.id }
+        updatedActivities.insert(record, at: 0)
+        activities = Array(updatedActivities.prefix(20))
     }
 
     private func refreshKnownFiles() {
@@ -383,19 +590,67 @@ final class SortDockStore: ObservableObject {
             return
         }
 
-        newFiles.forEach(processFile)
+        newFiles.forEach { processFile($0) }
     }
 
-    private func scheduleAskLater(_ fileURL: URL) {
-        recordActivity("Asked later for \(fileURL.lastPathComponent).")
+    private func resumeWaitingActivities() {
+        activities
+            .filter { $0.status == .waiting }
+            .forEach { activity in
+                guard let fileURL = existingFileURL(for: activity) else {
+                    if let path = activity.currentPath ?? activity.sourcePath {
+                        recordMissing(fileURL: URL(fileURLWithPath: path), activityID: activity.id)
+                    }
+                    return
+                }
 
-        Task { [weak self] in
+                guard let snoozedUntil = activity.snoozedUntil,
+                      snoozedUntil > Date()
+                else {
+                    processFile(fileURL, activityID: activity.id)
+                    return
+                }
+
+                scheduleSnoozeTask(activityID: activity.id, fileURL: fileURL, snoozedUntil: snoozedUntil)
+            }
+    }
+
+    private func scheduleAskLater(_ fileURL: URL, destination: DestinationFolder, activityID: UUID?) {
+        let recordID = activityID ?? UUID()
+        let snoozedUntil = Date().addingTimeInterval(settings.snoozeDelay)
+        let record = ActivityRecord(
+            id: recordID,
+            message: "Asked later for \(fileURL.lastPathComponent).",
+            status: .waiting,
+            fileName: fileURL.lastPathComponent,
+            sourcePath: fileURL.path,
+            currentPath: fileURL.path,
+            destinationID: destination.id,
+            destinationName: destination.name,
+            snoozedUntil: snoozedUntil
+        )
+
+        upsertActivity(record)
+        scheduleSnoozeTask(activityID: recordID, fileURL: fileURL, snoozedUntil: snoozedUntil)
+    }
+
+    private func scheduleSnoozeTask(activityID: UUID, fileURL: URL, snoozedUntil: Date) {
+        cancelSnooze(for: activityID)
+        let delay = max(0, snoozedUntil.timeIntervalSinceNow)
+
+        snoozeTasks[activityID] = Task { [weak self] in
             guard let self else {
                 return
             }
 
-            try? await Task.sleep(nanoseconds: UInt64(self.settings.snoozeDelay * 1_000_000_000))
-            self.processFile(fileURL)
+            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+
+            guard !Task.isCancelled else {
+                return
+            }
+
+            self.snoozeTasks[activityID] = nil
+            self.processFile(fileURL, activityID: activityID)
         }
     }
 
