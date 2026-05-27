@@ -668,7 +668,12 @@ final class SortDockStore: ObservableObject {
                 return
             }
 
-            try? await Task.sleep(nanoseconds: UInt64(self.settings.actionDelay * 1_000_000_000))
+            do {
+                try await Task.sleep(nanoseconds: UInt64(self.settings.actionDelay * 1_000_000_000))
+            } catch {
+                return
+            }
+
             self.scanForNewFiles()
         }
     }

@@ -9,16 +9,15 @@ import SwiftUI
 
 @main
 struct SortDockApp: App {
-    @StateObject private var store = SortDockStore()
+    @NSApplicationDelegateAdaptor(SortDockAppDelegate.self) private var appDelegate
 
     var body: some Scene {
         Window("SortDock", id: "main") {
             MainWindowView()
-                .environmentObject(store)
+                .environmentObject(appDelegate.store)
                 .frame(minWidth: 620, minHeight: 460)
                 .onAppear {
                     DockVisibilityCoordinator.showDockIcon()
-                    store.start()
                 }
                 .onDisappear {
                     DockVisibilityCoordinator.hideDockIcon()
@@ -28,7 +27,7 @@ struct SortDockApp: App {
 
         MenuBarExtra("SortDock", systemImage: "tray.full") {
             MenuBarPopoverView()
-                .environmentObject(store)
+                .environmentObject(appDelegate.store)
         }
     }
 }

@@ -9,6 +9,7 @@ The app watches a user-selected folder, waits for new files to finish downloadin
 ## Main Code
 
 - `SortDockApp.swift` starts the SwiftUI window and menu bar extra.
+- `Services/SortDockAppDelegate.swift` owns the shared store and starts watching at app launch, so sorting continues after the main window closes.
 - `State/SortDockStore.swift` owns settings, rules, activity, folder watching, prompts, and move flow.
 - `Models/` contains focused Codable models for settings, destinations, rules, and activity.
 - `Services/` contains folder access, file watching, moving, conflict handling, login item control, and persistence.

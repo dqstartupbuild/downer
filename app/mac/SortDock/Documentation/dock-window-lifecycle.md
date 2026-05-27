@@ -7,6 +7,7 @@ SortDock keeps running from the menu bar after the main window closes. When the 
 ## Behavior
 
 - Closing the main window does not quit SortDock.
+- Folder watching continues while the main window is closed.
 - The Dock icon is hidden while the app is running only from the menu bar.
 - `Open SortDock` restores the Dock icon, opens the main window if needed, and brings it forward.
 - The main app scene uses a single `Window`, so repeated menu bar clicks focus the existing window instead of creating duplicates.
@@ -14,6 +15,7 @@ SortDock keeps running from the menu bar after the main window closes. When the 
 ## Implementation
 
 - `SortDockApp` uses `Window("SortDock", id: "main")` for a single main window.
+- `SortDockAppDelegate` owns the shared `SortDockStore` and starts watching at app launch.
 - `DockVisibilityCoordinator` switches the app activation policy between `.regular` and `.accessory`.
 - `MenuBarPopoverView` restores the Dock icon before calling `openWindow(id: "main")`.
 

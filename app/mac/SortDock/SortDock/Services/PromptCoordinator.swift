@@ -7,6 +7,9 @@ final class PromptCoordinator {
         watchedFolderName: String,
         askLaterEnabled: Bool
     ) -> MovePromptChoice {
+        DockVisibilityCoordinator.showDockIcon()
+        DockVisibilityCoordinator.activate()
+
         let alert = NSAlert()
         alert.messageText = "Move \"\(fileName)\" to \(destinationName)?"
         alert.informativeText = "SortDock found this in \(watchedFolderName)."
@@ -19,16 +22,24 @@ final class PromptCoordinator {
             alert.addButton(withTitle: "Ask Later")
         }
 
+        let choice: MovePromptChoice
+
         switch alert.runModal() {
         case .alertFirstButtonReturn:
-            return .move
+            choice = .move
         case .alertSecondButtonReturn:
-            return .chooseFolder
+            choice = .chooseFolder
         case .alertThirdButtonReturn:
-            return .leave
+            choice = .leave
         default:
-            return askLaterEnabled ? .askLater : .leave
+            choice = askLaterEnabled ? .askLater : .leave
         }
+
+        DispatchQueue.main.async {
+            DockVisibilityCoordinator.hideDockIconIfNoVisibleWindow()
+        }
+
+        return choice
     }
 
     func chooseFolder() -> URL? {

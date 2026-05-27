@@ -5,6 +5,14 @@ enum DockVisibilityCoordinator {
         NSApp.activate(ignoringOtherApps: true)
     }
 
+    static func hideDockIconIfNoVisibleWindow() {
+        guard !NSApp.windows.contains(where: { $0.isVisible && !($0 is NSPanel) }) else {
+            return
+        }
+
+        hideDockIcon()
+    }
+
     static func hideDockIcon() {
         NSApp.setActivationPolicy(.accessory)
     }
