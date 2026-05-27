@@ -1,0 +1,81 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Xcode user state and build products
+DerivedData/
+build/
+*.xcuserstate
+xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xccheckout
+*.xcscmblueprint
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM
+*.dSYM.zip
+*.xcarchive
+*.xcresult
+*.app
+
+# Swift / SwiftPM build output
+.build/
+.swiftpm/
+Packages/
+
+# Next.js / React
+.next/
+out/
+next-env.d.ts
+
+# Node package artifacts
+node_modules/
+.npm/
+.pnpm-store/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment and local secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+!.env*.example
+
+# Test, coverage, and build caches
+coverage/
+.nyc_output/
+.turbo/
+.parcel-cache/
+.eslintcache
+*.tsbuildinfo
+
+# Deployment tooling
+.vercel/
+.netlify/
+
+# Editor and local tool noise
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+*.swp
+*.swo
+*~
