@@ -58,7 +58,11 @@ struct BehaviorSettingsView: View {
                 Text("Leave in place").tag(UUID?.none)
 
                 ForEach(store.destinations) { destination in
-                    Text(destination.name).tag(destination.id as UUID?)
+                    DestinationPickerLabel(
+                        destination: destination,
+                        availability: store.destinationAvailability(for: destination)
+                    )
+                    .tag(destination.id as UUID?)
                 }
             }
         }

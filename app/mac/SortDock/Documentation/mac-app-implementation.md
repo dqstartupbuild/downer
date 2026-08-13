@@ -4,7 +4,7 @@ SortDock now lives in the Xcode project at `app/mac/SortDock`.
 
 ## What It Does
 
-The app watches a user-selected folder, waits for new files to finish downloading, then routes each file to a destination folder based on extension rules. It can ask before moving or move automatically.
+The app watches a user-selected folder, waits for new files to finish downloading, then routes each file by ordered keyword rules or file-type rules. It can ask before moving or move automatically.
 
 ## Main Code
 
@@ -21,11 +21,13 @@ The main window keeps the status strip and latest activity line fixed. The two-c
 
 ## Folder Access
 
-The app is sandboxed. When the user picks a watch folder, SortDock stores a security-scoped app bookmark so it can keep watching that folder across launches.
+The app is sandboxed. When the user picks a watch folder or an external destination, SortDock stores a security-scoped app bookmark so that folder remains available across launches. Missing or inaccessible destinations are marked in the destination list and can be reconnected from their menu.
 
 ## File Moving
 
-Destination folders are created inside the watched folder. Existing files are never overwritten; SortDock chooses a safe name such as `example (1).pdf`.
+Named destinations are created inside the watched folder. Users can also pick existing folders anywhere macOS grants access. Existing files are never overwritten; SortDock chooses a safe name such as `example (1).pdf`.
+
+Keyword rules are checked from top to bottom before file-type rules. Matching ignores capitalization and checks the filename without its extension. Full behavior and the relevant file map are documented in `keyword-routing-and-custom-destinations.md`.
 
 ## Build
 

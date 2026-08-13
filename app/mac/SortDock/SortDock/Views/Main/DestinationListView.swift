@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct DestinationListView: View {
-    let onAdd: () -> Void
+    let onAddNamedFolder: () -> Void
+    let onChooseFolder: () -> Void
     let onRename: (DestinationFolder) -> Void
 
     @EnvironmentObject private var store: SortDockStore
@@ -11,11 +12,11 @@ struct DestinationListView: View {
             HStack {
                 SectionTitleView(title: "Destinations")
                 Spacer()
-                Button(action: onAdd) {
-                    Image(systemName: "plus")
-                }
-                .buttonStyle(.borderless)
-                .help("Add destination")
+                DestinationAddMenu(
+                    watchedFolderName: store.watchedFolderURL.lastPathComponent,
+                    onChooseFolder: onChooseFolder,
+                    onCreateFolder: onAddNamedFolder
+                )
             }
 
             ScrollView {
@@ -23,12 +24,16 @@ struct DestinationListView: View {
                     ForEach(store.destinations) { destination in
                         DestinationRowView(
                             destination: destination,
+                            availability: store.destinationAvailability(for: destination),
                             isSelected: store.selectedDestinationID == destination.id,
                             onSelect: {
                                 store.selectedDestinationID = destination.id
                             },
                             onRename: {
                                 onRename(destination)
+                            },
+                            onReconnect: {
+                                store.reconnectDestination(destination)
                             },
                             onDelete: {
                                 store.removeDestination(destination)

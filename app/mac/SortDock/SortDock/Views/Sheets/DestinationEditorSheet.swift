@@ -14,10 +14,17 @@ struct DestinationEditorSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text(destination == nil ? "Add Destination" : "Rename Destination")
+            Text(destination == nil ? "New Destination Folder" : "Rename Destination")
                 .font(.title3.weight(.semibold))
 
             TextField("Folder name", text: $name)
+
+            if destination == nil {
+                Text("SortDock will create this folder inside \(store.watchedFolderURL.lastPathComponent) when it is first needed.")
+                    .font(.footnote)
+                    .foregroundStyle(DesignTokens.mutedText)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
 
             HStack {
                 Spacer()

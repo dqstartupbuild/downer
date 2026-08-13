@@ -25,7 +25,11 @@ struct RuleEditorSheet: View {
 
             Picker("Destination", selection: destinationBinding) {
                 ForEach(store.destinations) { destination in
-                    Text(destination.name).tag(destination.id as UUID?)
+                    DestinationPickerLabel(
+                        destination: destination,
+                        availability: store.destinationAvailability(for: destination)
+                    )
+                    .tag(destination.id as UUID?)
                 }
             }
 

@@ -9,7 +9,7 @@ struct RoutingRailView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                SectionTitleView(title: "Routing")
+                SectionTitleView(title: "File Types")
                 Spacer()
                 Button(action: onAddRule) {
                     Label("Add Rule", systemImage: "plus")

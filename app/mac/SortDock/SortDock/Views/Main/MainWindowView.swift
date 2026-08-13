@@ -4,6 +4,7 @@ struct MainWindowView: View {
     @EnvironmentObject private var store: SortDockStore
     @State private var destinationEditorDestination: DestinationFolder?
     @State private var isDestinationEditorPresented = false
+    @State private var keywordRuleEditorPresentation: KeywordRuleEditorPresentation?
     @State private var isRuleEditorPresented = false
     @State private var ruleEditorRule: RoutingRule?
 
@@ -16,13 +17,18 @@ struct MainWindowView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         WatchFolderPanel()
                         DestinationListView(
-                            onAdd: openAddDestination,
+                            onAddNamedFolder: openAddDestination,
+                            onChooseFolder: store.chooseDestinationFolder,
                             onRename: openRenameDestination
                         )
                     }
                     .frame(width: 220)
 
                     VStack(alignment: .leading, spacing: 16) {
+                        KeywordRulesView(
+                            onAddRule: openAddKeywordRule,
+                            onEditRule: openEditKeywordRule
+                        )
                         RoutingRailView(
                             onAddRule: openAddRule,
                             onEditRule: openEditRule
@@ -47,6 +53,10 @@ struct MainWindowView: View {
             DestinationEditorSheet(destination: destinationEditorDestination)
                 .environmentObject(store)
         }
+        .sheet(item: $keywordRuleEditorPresentation) { presentation in
+            KeywordRuleEditorSheet(rule: presentation.rule)
+                .environmentObject(store)
+        }
         .sheet(isPresented: $store.isHistoryPresented) {
             HistorySheet()
                 .environmentObject(store)
@@ -63,9 +73,17 @@ struct MainWindowView: View {
         isRuleEditorPresented = true
     }
 
+    private func openAddKeywordRule() {
+        keywordRuleEditorPresentation = KeywordRuleEditorPresentation(rule: nil)
+    }
+
     private func openEditRule(_ rule: RoutingRule) {
         ruleEditorRule = rule
         isRuleEditorPresented = true
+    }
+
+    private func openEditKeywordRule(_ rule: KeywordRule) {
+        keywordRuleEditorPresentation = KeywordRuleEditorPresentation(rule: rule)
     }
 
     private func openRenameDestination(_ destination: DestinationFolder) {

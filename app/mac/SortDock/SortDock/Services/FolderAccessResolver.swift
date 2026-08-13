@@ -1,10 +1,5 @@
 import Foundation
 
-struct FolderAccess {
-    let url: URL
-    let didStartAccessing: Bool
-}
-
 enum FolderAccessResolver {
     static func resolve(settings: SortDockSettings) -> FolderAccess {
         guard let bookmark = settings.watchedFolderBookmark else {
@@ -24,7 +19,11 @@ enum FolderAccessResolver {
                 bookmarkDataIsStale: &isStale
             )
             let didStartAccessing = url.startAccessingSecurityScopedResource()
-            return FolderAccess(url: url, didStartAccessing: didStartAccessing)
+            return FolderAccess(
+                url: url,
+                didStartAccessing: didStartAccessing,
+                isBookmarkStale: isStale
+            )
         } catch {
             return FolderAccess(
                 url: URL(fileURLWithPath: settings.watchedFolderPath, isDirectory: true),

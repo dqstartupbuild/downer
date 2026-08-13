@@ -23,7 +23,14 @@ final class SortDockStore: ObservableObject {
         }
     }
 
+    @Published var keywordRules: [KeywordRule] {
+        didSet {
+            persist()
+        }
+    }
+
     @Published var selectedDestinationID: UUID?
+    @Published var selectedKeywordRuleID: UUID?
     @Published var selectedRuleID: UUID?
     @Published var settings: SortDockSettings {
         didSet {
@@ -35,6 +42,7 @@ final class SortDockStore: ObservableObject {
     @Published private(set) var statusMessage = "Ready"
 
     private let fileManager = FileManager.default
+    private let folderPicker = FolderPicker()
     private let mover = FileMover()
     private let persistence = SettingsPersistence()
     private let promptCoordinator = PromptCoordinator()
@@ -49,8 +57,10 @@ final class SortDockStore: ObservableObject {
         settings = configuration.settings
         destinations = configuration.destinations
         rules = configuration.rules
+        keywordRules = configuration.keywordRules
         activities = configuration.activities
         selectedDestinationID = configuration.destinations.first?.id
+        selectedKeywordRuleID = configuration.keywordRules.first?.id
         selectedRuleID = configuration.rules.first?.id
     }
 
@@ -67,7 +77,8 @@ final class SortDockStore: ObservableObject {
     }
 
     var currentStatusSummary: String {
-        "\(watchedFolderURL.lastPathComponent) -> \(rules.count) rules -> \(settings.moveBehavior.summary) after \(delayLabel)"
+        let ruleCount = rules.count + keywordRules.count
+        return "\(watchedFolderURL.lastPathComponent) -> \(ruleCount) rules -> \(settings.moveBehavior.summary) after \(delayLabel)"
     }
 
     var delayLabel: String {
@@ -102,17 +113,53 @@ final class SortDockStore: ObservableObject {
         selectedDestinationID = destination.id
     }
 
-    func chooseWatchedFolder() {
-        guard let url = promptCoordinator.chooseWatchedFolder() else {
+    func chooseDestinationFolder() {
+        guard let url = folderPicker.chooseFolder(
+            message: "Choose a folder for sorted files.",
+            prompt: "Use This Folder"
+        ) else {
+            return
+        }
+
+        let folderURL = url.standardizedFileURL
+
+        guard folderURL.path != watchedFolderURL.standardizedFileURL.path else {
+            statusMessage = "Choose a folder outside the folder SortDock watches."
             return
         }
 
         do {
-            settings.watchedFolderBookmark = try url.bookmarkData(
-                options: [.withSecurityScope],
-                includingResourceValuesForKeys: nil,
-                relativeTo: nil
-            )
+            let bookmark = try SecurityScopedBookmarkFactory.make(for: folderURL)
+
+            if let index = destinations.firstIndex(where: { $0.folderPath == folderURL.path }) {
+                destinations[index].folderBookmark = bookmark
+                selectedDestinationID = destinations[index].id
+            } else {
+                let destination = DestinationFolder(
+                    name: folderURL.lastPathComponent,
+                    folderPath: folderURL.path,
+                    folderBookmark: bookmark
+                )
+                destinations.append(destination)
+                selectedDestinationID = destination.id
+            }
+
+            statusMessage = "Added \(folderURL.lastPathComponent)."
+        } catch {
+            statusMessage = "Could not save access to \(folderURL.lastPathComponent)."
+        }
+    }
+
+    func chooseWatchedFolder() {
+        guard let url = folderPicker.chooseFolder(
+            message: "Choose the folder SortDock should watch.",
+            prompt: "Watch This Folder"
+        ) else {
+            return
+        }
+
+        do {
+            settings.watchedFolderBookmark = try SecurityScopedBookmarkFactory.make(for: url)
         } catch {
             settings.watchedFolderBookmark = nil
         }
@@ -129,6 +176,25 @@ final class SortDockStore: ObservableObject {
     }
 
     func destinationName(for rule: RoutingRule) -> String {
+        destinations.first { $0.id == rule.destinationID }?.name ?? "Missing folder"
+    }
+
+    func deleteKeywordRule(_ rule: KeywordRule) {
+        keywordRules.removeAll { $0.id == rule.id }
+
+        if selectedKeywordRuleID == rule.id {
+            selectedKeywordRuleID = keywordRules.first?.id
+        }
+    }
+
+    func destinationAvailability(for destination: DestinationFolder) -> DestinationAvailability {
+        DestinationFolderAccessResolver.availability(
+            destination: destination,
+            watchedFolderURL: watchedFolderURL
+        )
+    }
+
+    func destinationName(for rule: KeywordRule) -> String {
         destinations.first { $0.id == rule.destinationID }?.name ?? "Missing folder"
     }
 
@@ -152,6 +218,7 @@ final class SortDockStore: ObservableObject {
     func removeDestination(_ destination: DestinationFolder) {
         destinations.removeAll { $0.id == destination.id }
         rules.removeAll { $0.destinationID == destination.id }
+        keywordRules.removeAll { $0.destinationID == destination.id }
 
         if settings.defaultDestinationID == destination.id {
             settings.defaultDestinationID = nil
@@ -172,6 +239,83 @@ final class SortDockStore: ObservableObject {
         }
 
         destinations[index].name = name
+    }
+
+    func reconnectDestination(_ destination: DestinationFolder) {
+        guard let url = folderPicker.chooseFolder(
+            message: "Choose the folder used by \(destination.name).",
+            prompt: "Use This Folder"
+        ) else {
+            return
+        }
+
+        do {
+            guard let index = destinations.firstIndex(where: { $0.id == destination.id }) else {
+                return
+            }
+
+            let folderURL = url.standardizedFileURL
+
+            guard folderURL.path != watchedFolderURL.standardizedFileURL.path else {
+                statusMessage = "Choose a folder outside the folder SortDock watches."
+                return
+            }
+
+            destinations[index].folderPath = folderURL.path
+            destinations[index].folderBookmark = try SecurityScopedBookmarkFactory.make(for: folderURL)
+            statusMessage = "Reconnected \(destination.name)."
+        } catch {
+            statusMessage = "Could not save access to that folder."
+        }
+    }
+
+    func saveKeywordRule(
+        id: UUID?,
+        keywords: [String],
+        destinationID: UUID,
+        isEnabled: Bool
+    ) {
+        if let id,
+           let index = keywordRules.firstIndex(where: { $0.id == id }) {
+            keywordRules[index].keywords = keywords
+            keywordRules[index].destinationID = destinationID
+            keywordRules[index].isEnabled = isEnabled
+            selectedKeywordRuleID = id
+        } else {
+            let rule = KeywordRule(
+                keywords: keywords,
+                destinationID: destinationID,
+                isEnabled: isEnabled
+            )
+            keywordRules.append(rule)
+            selectedKeywordRuleID = rule.id
+        }
+    }
+
+    func setKeywordRule(_ rule: KeywordRule, isEnabled: Bool) {
+        guard let index = keywordRules.firstIndex(where: { $0.id == rule.id }) else {
+            return
+        }
+
+        keywordRules[index].isEnabled = isEnabled
+    }
+
+    func moveKeywordRuleUp(_ rule: KeywordRule) {
+        guard let index = keywordRules.firstIndex(where: { $0.id == rule.id }), index > 0 else {
+            return
+        }
+
+        keywordRules.swapAt(index, index - 1)
+    }
+
+    func moveKeywordRuleDown(_ rule: KeywordRule) {
+        guard let index = keywordRules.firstIndex(where: { $0.id == rule.id }),
+              index < keywordRules.count - 1
+        else {
+            return
+        }
+
+        keywordRules.swapAt(index, index + 1)
     }
 
     func saveRule(id: UUID?, extensions: [String], destinationID: UUID) {
@@ -227,7 +371,11 @@ final class SortDockStore: ObservableObject {
             return false
         }
 
-        return suggestedDestination(for: activity) != nil
+        guard let destination = suggestedDestination(for: activity) else {
+            return false
+        }
+
+        return destinationAvailability(for: destination) == .available
     }
 
     func canRevealActivity(_ activity: ActivityRecord) -> Bool {
@@ -240,7 +388,10 @@ final class SortDockStore: ObservableObject {
             return
         }
 
-        guard let folderURL = promptCoordinator.chooseFolder() else {
+        guard let folderURL = folderPicker.chooseFolder(
+            message: "Choose where this file should go.",
+            prompt: "Choose"
+        ) else {
             return
         }
 
@@ -318,22 +469,17 @@ final class SortDockStore: ObservableObject {
         }
     }
 
-    private func defaultDestination() -> DestinationFolder? {
-        guard let id = settings.defaultDestinationID else {
+    private func destination(for fileURL: URL) -> DestinationFolder? {
+        guard let destinationID = FileRoutingResolver.destinationID(
+            for: fileURL,
+            keywordRules: keywordRules,
+            fileTypeRules: rules,
+            defaultDestinationID: settings.defaultDestinationID
+        ) else {
             return nil
         }
 
-        return destinations.first { $0.id == id }
-    }
-
-    private func destination(for fileURL: URL) -> DestinationFolder? {
-        let fileExtension = fileURL.pathExtension.lowercased()
-
-        if let rule = rules.first(where: { $0.matches(fileExtension: fileExtension) }) {
-            return destinations.first { $0.id == rule.destinationID }
-        }
-
-        return defaultDestination()
+        return destinations.first { $0.id == destinationID }
     }
 
     private func cancelSnooze(for activityID: UUID) {
@@ -384,8 +530,41 @@ final class SortDockStore: ObservableObject {
         customFolderURL: URL? = nil,
         activityID: UUID? = nil
     ) {
-        let destinationFolderURL = customFolderURL
-            ?? mover.destinationURL(for: destination, watchedFolderURL: watchedFolderURL)
+        let destinationFolderURL: URL
+        let destinationAccess: FolderAccess?
+
+        if let customFolderURL {
+            destinationFolderURL = customFolderURL
+            destinationAccess = nil
+        } else {
+            do {
+                let access = try DestinationFolderAccessResolver.resolve(
+                    destination: destination,
+                    watchedFolderURL: watchedFolderURL
+                )
+                destinationFolderURL = access.url
+                destinationAccess = access
+
+                if access.isBookmarkStale,
+                   let index = destinations.firstIndex(where: { $0.id == destination.id }),
+                   let bookmark = try? SecurityScopedBookmarkFactory.make(for: access.url) {
+                    destinations[index].folderPath = access.url.path
+                    destinations[index].folderBookmark = bookmark
+                }
+            } catch {
+                recordUnavailableDestination(
+                    fileURL: fileURL,
+                    destination: destination,
+                    activityID: activityID
+                )
+                statusMessage = "\(destination.name) needs your attention."
+                return
+            }
+        }
+
+        defer {
+            destinationAccess?.stop()
+        }
 
         do {
             let movedURL = try mover.move(fileURL: fileURL, to: destinationFolderURL)
@@ -409,6 +588,7 @@ final class SortDockStore: ObservableObject {
                 settings: settings,
                 destinations: destinations,
                 rules: rules,
+                keywordRules: keywordRules,
                 activities: activities
             )
         )
@@ -427,6 +607,16 @@ final class SortDockStore: ObservableObject {
             return
         }
 
+        guard destinationAvailability(for: destination) == .available else {
+            recordUnavailableDestination(
+                fileURL: fileURL,
+                destination: destination,
+                activityID: activityID
+            )
+            statusMessage = "\(destination.name) needs your attention."
+            return
+        }
+
         switch settings.moveBehavior {
         case .autoMove:
             performMove(fileURL: fileURL, destination: destination, activityID: activityID)
@@ -442,7 +632,10 @@ final class SortDockStore: ObservableObject {
             case .move:
                 performMove(fileURL: fileURL, destination: destination, activityID: activityID)
             case .chooseFolder:
-                if let folderURL = promptCoordinator.chooseFolder() {
+                if let folderURL = folderPicker.chooseFolder(
+                    message: "Choose where this file should go.",
+                    prompt: "Choose"
+                ) {
                     performMove(
                         fileURL: fileURL,
                         destination: destination,
@@ -503,6 +696,25 @@ final class SortDockStore: ObservableObject {
         upsertActivity(record)
     }
 
+    private func recordUnavailableDestination(
+        fileURL: URL,
+        destination: DestinationFolder,
+        activityID: UUID?
+    ) {
+        let record = ActivityRecord(
+            id: activityID ?? UUID(),
+            message: "Left \(fileURL.lastPathComponent) in place because \(destination.name) is unavailable.",
+            status: .failed,
+            fileName: fileURL.lastPathComponent,
+            sourcePath: fileURL.path,
+            currentPath: fileURL.path,
+            destinationID: destination.id,
+            destinationName: destination.name
+        )
+
+        upsertActivity(record)
+    }
+
     private func recordMoved(
         originalURL: URL,
         movedURL: URL,
@@ -541,9 +753,7 @@ final class SortDockStore: ObservableObject {
     }
 
     private func resolveFolderAccess() {
-        if folderAccess?.didStartAccessing == true {
-            folderAccess?.url.stopAccessingSecurityScopedResource()
-        }
+        folderAccess?.stop()
 
         folderAccess = FolderAccessResolver.resolve(settings: settings)
     }

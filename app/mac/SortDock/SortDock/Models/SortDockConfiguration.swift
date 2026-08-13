@@ -4,7 +4,22 @@ struct SortDockConfiguration: Codable, Equatable {
     var settings: SortDockSettings
     var destinations: [DestinationFolder]
     var rules: [RoutingRule]
+    var keywordRules: [KeywordRule]
     var activities: [ActivityRecord]
+
+    init(
+        settings: SortDockSettings,
+        destinations: [DestinationFolder],
+        rules: [RoutingRule],
+        keywordRules: [KeywordRule] = [],
+        activities: [ActivityRecord]
+    ) {
+        self.settings = settings
+        self.destinations = destinations
+        self.rules = rules
+        self.keywordRules = keywordRules
+        self.activities = activities
+    }
 
     static func defaultValue() -> SortDockConfiguration {
         let pdfs = DestinationFolder(name: "PDFs")
@@ -44,7 +59,26 @@ struct SortDockConfiguration: Codable, Equatable {
             settings: SortDockSettings(),
             destinations: destinations,
             rules: rules,
+            keywordRules: [],
             activities: []
         )
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case settings
+        case destinations
+        case rules
+        case keywordRules
+        case activities
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        settings = try container.decode(SortDockSettings.self, forKey: .settings)
+        destinations = try container.decode([DestinationFolder].self, forKey: .destinations)
+        rules = try container.decode([RoutingRule].self, forKey: .rules)
+        keywordRules = try container.decodeIfPresent([KeywordRule].self, forKey: .keywordRules) ?? []
+        activities = try container.decodeIfPresent([ActivityRecord].self, forKey: .activities) ?? []
     }
 }

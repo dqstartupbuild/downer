@@ -42,33 +42,4 @@ final class PromptCoordinator {
         return choice
     }
 
-    func chooseFolder() -> URL? {
-        let panel = NSOpenPanel()
-        panel.allowsMultipleSelection = false
-        panel.canChooseDirectories = true
-        panel.canChooseFiles = false
-        panel.message = "Choose where this file should go."
-        panel.prompt = "Choose"
-
-        guard panel.runModal() == .OK else {
-            return nil
-        }
-
-        return panel.url
-    }
-
-    func chooseWatchedFolder() -> URL? {
-        let panel = NSOpenPanel()
-        panel.allowsMultipleSelection = false
-        panel.canChooseDirectories = true
-        panel.canChooseFiles = false
-        panel.message = "Choose the folder SortDock should watch."
-        panel.prompt = "Watch This Folder"
-
-        guard panel.runModal() == .OK else {
-            return nil
-        }
-
-        return panel.url
-    }
 }
