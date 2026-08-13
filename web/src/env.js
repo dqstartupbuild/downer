@@ -8,6 +8,13 @@ export const env = createEnv({
    */
   server: {
     NODE_ENV: z.enum(["development", "test", "production"]),
+    GITHUB_RELEASE_TOKEN: z.string().min(1).optional(),
+    SITE_URL: z.string().url().optional(),
+    SORTDOCK_GITHUB_REPOSITORY: z
+      .string()
+      .regex(/^[^/\s]+\/[^/\s]+$/)
+      .optional(),
+    VERCEL_PROJECT_PRODUCTION_URL: z.string().min(1).optional(),
   },
 
   /**
@@ -25,6 +32,10 @@ export const env = createEnv({
    */
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
+    GITHUB_RELEASE_TOKEN: process.env.GITHUB_RELEASE_TOKEN,
+    SITE_URL: process.env.SITE_URL,
+    SORTDOCK_GITHUB_REPOSITORY: process.env.SORTDOCK_GITHUB_REPOSITORY,
+    VERCEL_PROJECT_PRODUCTION_URL: process.env.VERCEL_PROJECT_PRODUCTION_URL,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

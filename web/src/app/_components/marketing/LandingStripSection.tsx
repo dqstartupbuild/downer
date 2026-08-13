@@ -14,13 +14,9 @@ export function LandingStripSection() {
       aria-labelledby="landing-strip-title"
       className="bg-[var(--window)] px-5 py-14 md:px-10 md:py-[88px] lg:px-[72px]"
     >
-      <div className="mx-auto grid max-w-[1180px] gap-8 md:grid-cols-[1.12fr_0.88fr] md:items-center">
+      <div className="mx-auto grid max-w-[1180px] gap-8 lg:grid-cols-[1.12fr_0.88fr] lg:items-center">
         <div className="relative">
-          <div className="mb-4 flex items-center gap-3 text-sm font-semibold text-[var(--ink-muted)]">
-            <span
-              className="h-px w-12 bg-[var(--routing-rail)]"
-              aria-hidden="true"
-            />
+          <div className="mb-4 text-sm font-semibold text-[var(--ink-muted)]">
             The Download Landing Strip
           </div>
           <DownloadRail />

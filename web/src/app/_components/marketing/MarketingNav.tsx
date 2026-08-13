@@ -1,12 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export function MarketingNav() {
+import { ReleaseAction } from "~/app/_components/marketing/ReleaseAction";
+import type { ReleaseState } from "~/lib/release/ReleaseState";
+
+type MarketingNavProps = {
+  releaseState: ReleaseState;
+};
+
+export function MarketingNav({ releaseState }: MarketingNavProps) {
   return (
     <header className="absolute top-0 left-0 z-30 w-full px-5 py-5 md:px-10 lg:px-[72px]">
       <nav
         aria-label="Main"
-        className="mx-auto flex h-14 w-full max-w-[1180px] items-center justify-between rounded-[8px] border border-[var(--nav-border)] bg-[var(--nav-bg)] px-3 shadow-[0_16px_44px_var(--dock-shadow)] backdrop-blur-md md:px-4"
+        className="mx-auto flex h-14 w-full max-w-[1180px] items-center justify-between rounded-[8px] border border-[var(--nav-border)] bg-[var(--nav-bg)] px-3 shadow-[0_3px_8px_var(--dock-shadow)] backdrop-blur-md md:px-4"
       >
         <Link
           href="#top"
@@ -36,12 +43,7 @@ export function MarketingNav() {
           >
             Privacy
           </Link>
-          <Link
-            href="#download"
-            className="inline-flex min-h-11 items-center rounded-[8px] bg-[var(--accent-soft)] px-4 font-semibold text-[var(--tag-text)] transition-colors outline-none hover:bg-[var(--line-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--focus)]"
-          >
-            Download
-          </Link>
+          <ReleaseAction releaseState={releaseState} placement="nav" />
         </div>
       </nav>
     </header>

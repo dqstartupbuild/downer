@@ -14,11 +14,11 @@ export function ProductSlice({
   children,
 }: ProductSliceProps) {
   return (
-    <article>
-      <div className="min-h-44 rounded-[8px] border border-[var(--line)] bg-[var(--panel-raised)] p-4 shadow-[0_18px_44px_var(--dock-shadow)]">
+    <article className="flex flex-col">
+      <div className="order-2 mt-5 rounded-[8px] border border-[var(--line)] bg-[var(--panel-raised)] p-4 lg:order-1 lg:mt-0 lg:min-h-44">
         {children}
       </div>
-      <div className="mt-5">
+      <div className="order-1 lg:order-2 lg:mt-5">
         {eyebrow ? (
           <p className="mb-2 text-sm font-semibold text-[var(--tag-text)]">
             {eyebrow}

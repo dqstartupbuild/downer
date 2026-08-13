@@ -26,14 +26,11 @@ export function PrivacyProofSection() {
       aria-labelledby="privacy-title"
       className="bg-[image:var(--section-tint)] px-5 py-14 md:px-10 md:py-[88px] lg:px-[72px]"
     >
-      <div className="mx-auto grid max-w-[1180px] gap-8 md:grid-cols-[0.88fr_1.12fr] md:items-start">
+      <div className="mx-auto grid max-w-[1180px] gap-8 lg:grid-cols-[0.88fr_1.12fr] lg:items-start">
         <div>
-          <p className="text-sm font-semibold text-[var(--tag-text)]">
-            Small app, small promises
-          </p>
           <h2
             id="privacy-title"
-            className="mt-3 font-serif text-3xl leading-tight font-bold text-[var(--ink)] md:text-5xl"
+            className="font-serif text-3xl leading-tight font-bold text-[var(--ink)] md:text-5xl"
           >
             Keep control close to home.
           </h2>

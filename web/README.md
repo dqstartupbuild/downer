@@ -1,29 +1,46 @@
-# Create T3 App
+# SortDock website
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+The `web` directory contains SortDock's Next.js marketing site.
 
-## What's next? How do I make an app with this?
+## Local development
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+```sh
+npm ci
+npm run dev
+```
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+Open `http://localhost:3000`.
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## Release-aware download
 
-## Learn More
+The site checks the latest published GitHub release every 15 minutes. It shows
+`Coming soon` until that release includes a `.dmg`, `.pkg`, or `.zip` asset. As
+soon as a supported asset is published, the same controls become direct
+downloads without another website deployment.
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+No environment variables are required for the default repository. Copy
+`.env.example` only when you need to override the public URL, release repository,
+or provide an optional read-only GitHub token.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+## Checks
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+```sh
+npm run check
+npm run build
+```
 
-## How do I deploy this?
+## Vercel
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+When importing the Git repository into Vercel:
+
+- Set the project root directory to `web`.
+- Keep the detected framework as Next.js.
+- Keep the detected install command and use `npm run build` as the build command.
+- Set `SITE_URL` to the final custom domain when one is connected. Vercel's
+  production URL is used automatically until then.
+- Optionally set `GITHUB_RELEASE_TOKEN` to a fine-grained, read-only token if the
+  unauthenticated GitHub API limit becomes an issue. Do not expose it as a
+  `NEXT_PUBLIC_` variable.
+
+Vercel Git integration will build preview deployments for branches and production
+deployments from the configured production branch.

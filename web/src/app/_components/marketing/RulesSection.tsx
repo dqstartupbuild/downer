@@ -6,7 +6,7 @@ export function RulesSection() {
       aria-labelledby="rules-title"
       className="bg-[var(--window)] px-5 py-14 md:px-10 md:py-[88px] lg:px-[72px]"
     >
-      <div className="mx-auto grid max-w-[1180px] gap-8 md:grid-cols-[0.82fr_1.18fr] md:items-center">
+      <div className="mx-auto grid max-w-[1180px] gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
         <div>
           <h2
             id="rules-title"

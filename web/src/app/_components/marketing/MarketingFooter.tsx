@@ -1,13 +1,28 @@
-export function MarketingFooter() {
+import type { ReleaseState } from "~/lib/release/ReleaseState";
+
+type MarketingFooterProps = {
+  releaseState: ReleaseState;
+};
+
+export function MarketingFooter({ releaseState }: MarketingFooterProps) {
+  const releaseLabel =
+    releaseState.status === "available"
+      ? `${releaseState.version} available`
+      : "Coming soon";
+
   return (
     <footer className="bg-[var(--window)] px-5 py-8 md:px-10 lg:px-[72px]">
-      <div className="mx-auto flex max-w-[1180px] flex-col gap-3 border-t border-[var(--line)] pt-6 text-sm text-[var(--ink-muted)] sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto grid max-w-[1180px] grid-cols-2 items-center gap-x-5 gap-y-3 border-t border-[var(--line)] pt-6 text-sm text-[var(--ink-muted)] sm:flex sm:flex-wrap sm:gap-x-6">
         <p className="font-semibold text-[var(--ink)]">SortDock</p>
-        <div className="flex flex-wrap gap-x-5 gap-y-2">
-          <span>Preview build</span>
-          <span>Sorting stays local.</span>
-          <span>Made for macOS.</span>
-        </div>
+        <span>{releaseLabel}</span>
+        <span>Sorting stays local.</span>
+        <a
+          className="font-semibold text-[var(--ink)] transition-colors hover:text-[var(--accent-deep)]"
+          href="https://github.com/dqstartupbuild/downer"
+          rel="noreferrer"
+        >
+          GitHub
+        </a>
       </div>
     </footer>
   );

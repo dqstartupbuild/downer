@@ -7,21 +7,26 @@ import { MarketingFooter } from "~/app/_components/marketing/MarketingFooter";
 import { MarketingNav } from "~/app/_components/marketing/MarketingNav";
 import { PrivacyProofSection } from "~/app/_components/marketing/PrivacyProofSection";
 import { RulesSection } from "~/app/_components/marketing/RulesSection";
+import type { ReleaseState } from "~/lib/release/ReleaseState";
 
-export function MarketingPage() {
+type MarketingPageProps = {
+  releaseState: ReleaseState;
+};
+
+export function MarketingPage({ releaseState }: MarketingPageProps) {
   return (
     <div className="min-h-screen overflow-x-hidden bg-[var(--window)] text-[var(--ink)]">
-      <MarketingNav />
+      <MarketingNav releaseState={releaseState} />
       <main>
-        <HeroSection />
+        <HeroSection releaseState={releaseState} />
         <LandingStripSection />
         <BehaviorComparison />
         <RulesSection />
         <PrivacyProofSection />
         <MacFitSection />
-        <FinalCtaSection />
+        <FinalCtaSection releaseState={releaseState} />
       </main>
-      <MarketingFooter />
+      <MarketingFooter releaseState={releaseState} />
     </div>
   );
 }

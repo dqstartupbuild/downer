@@ -1,6 +1,6 @@
 # SortDock Marketing Page
 
-Last updated: 2026-05-27
+Last updated: 2026-08-13
 
 ## Purpose
 
@@ -17,7 +17,7 @@ The web marketing page presents SortDock as a compact macOS utility for keeping 
 
 The marketing page replaces the default Create T3 App home page at `web/src/app/page.tsx`. It stays in the Next.js App Router and uses server components by default. The page does not call tRPC because the current marketing experience has no dynamic data needs.
 
-The layout metadata and fonts live in `web/src/app/layout.tsx`. The page uses `Fraunces` for display text and `IBM Plex Sans` for body text, matching the web design direction.
+The layout metadata lives in `web/src/lib/site/siteMetadata.ts`. Display text uses a Mac-first editorial serif stack and body text uses the native system stack, keeping the site connected to macOS without a remote font request.
 
 Brand icons are served from:
 
@@ -32,6 +32,9 @@ Design tokens and base motion live in `web/src/styles/globals.css`. All page col
 ```text
 web/src/app/page.tsx
 web/src/app/layout.tsx
+web/src/app/opengraph-image.tsx
+web/src/app/robots.ts
+web/src/app/sitemap.ts
 web/src/styles/globals.css
 web/src/app/_components/marketing/MarketingPage.tsx
 web/src/app/_components/marketing/MarketingNav.tsx
@@ -47,23 +50,30 @@ web/src/app/_components/marketing/FinalCtaSection.tsx
 web/src/app/_components/marketing/MarketingFooter.tsx
 web/src/app/_components/marketing/ProductSlice.tsx
 web/src/app/_components/marketing/ProofPointRow.tsx
+web/src/app/_components/marketing/ReleaseAction.tsx
 ```
 
 ## Behavior
 
 - The hero leads with the SortDock name, direct value copy, and an image-led product environment.
+- Download controls show `Coming soon` until the latest published GitHub release includes a Mac download, then link directly to that asset.
 - The routing rail appears in the hero, landing strip, and rules sections.
+- On narrow screens, routing examples stay in one compact three-lane row instead of turning into tall stacked cards.
+- Product examples introduce their purpose before the visual on phones and tablets, then return to the visual-first card layout on wider screens.
+- The hero uses separate phone, tablet, and desktop positioning so the copy and product window never collide or leave the viewport.
 - Ask First, Auto Move, delay, Ask Later, local preferences, no accounts, no cloud sync, and conflict-safe naming are all represented in plain copy.
 - Below-fold product slices use lightweight HTML and CSS mockups instead of a heavy animation or screenshot library.
-- Motion is limited to entrance and rail-draw effects and respects `prefers-reduced-motion`.
+- Motion is limited to the routing interaction and respects `prefers-reduced-motion`. Content is visible without waiting for an entrance animation.
 
 ## Maintenance Notes
 
-When a packaged Mac download exists, update the `Download for Mac` links in `HeroSection.tsx` and `FinalCtaSection.tsx` to point to the real artifact.
+Release behavior and publishing steps are documented in `github-release-download.md`.
+Responsive layout behavior and its verification matrix are documented in `responsive-marketing-layout.md`.
 
 Run from `web/` after page changes:
 
 ```sh
 npm run typecheck
+npm run test
 npm run build
 ```

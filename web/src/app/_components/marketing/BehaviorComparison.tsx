@@ -8,24 +8,21 @@ export function BehaviorComparison() {
     >
       <div className="mx-auto max-w-[1180px]">
         <div className="max-w-[640px]">
-          <p className="text-sm font-semibold text-[var(--tag-text)]">
-            Control the moment
-          </p>
           <h2
             id="behavior-title"
-            className="mt-3 font-serif text-3xl leading-tight font-bold text-[var(--ink)] md:text-5xl"
+            className="font-serif text-3xl leading-tight font-bold text-[var(--ink)] md:text-5xl"
           >
             Ask first, or let it move quietly.
           </h2>
         </div>
 
-        <div className="mt-8 grid gap-5 md:grid-cols-2">
+        <div className="mt-8 grid gap-8 lg:grid-cols-2 lg:gap-5">
           <ProductSlice
             eyebrow="Ask First"
             title="Ask before moving"
             body="SortDock checks with you when a new file arrives. Move it, choose another folder, leave it, or ask later."
           >
-            <div className="mx-auto max-w-sm rounded-[8px] border border-[var(--line-strong)] bg-[var(--panel)] p-4 shadow-[0_14px_36px_var(--dock-shadow)]">
+            <div className="mx-auto max-w-sm rounded-[8px] border border-[var(--line-strong)] bg-[var(--panel)] p-4 shadow-[0_4px_12px_var(--dock-shadow)]">
               <p className="text-sm font-semibold text-[var(--ink)]">
                 Move &quot;invoice.pdf&quot; to &quot;PDFs&quot;?
               </p>

@@ -1,6 +1,13 @@
 import Link from "next/link";
 
-export function FinalCtaSection() {
+import { ReleaseAction } from "~/app/_components/marketing/ReleaseAction";
+import type { ReleaseState } from "~/lib/release/ReleaseState";
+
+type FinalCtaSectionProps = {
+  releaseState: ReleaseState;
+};
+
+export function FinalCtaSection({ releaseState }: FinalCtaSectionProps) {
   return (
     <section
       id="download"
@@ -21,18 +28,13 @@ export function FinalCtaSection() {
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-3 md:justify-end">
-          <Link
-            href="#download"
-            className="inline-flex min-h-11 items-center rounded-[8px] bg-[image:linear-gradient(135deg,var(--button-primary-start),var(--button-primary-end))] px-5 text-sm font-semibold text-[var(--ink-on-accent)] shadow-[0_16px_34px_var(--dock-shadow)] transition-transform outline-none hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--focus)]"
-          >
-            Download for Mac
-          </Link>
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center md:justify-end">
+          <ReleaseAction releaseState={releaseState} placement="final" />
           <Link
             href="#how-it-works"
-            className="inline-flex min-h-11 items-center rounded-[8px] border border-[var(--line-strong)] bg-[var(--panel)] px-5 text-sm font-semibold text-[var(--ink)] shadow-[0_12px_24px_var(--dock-shadow)] transition-transform outline-none hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--focus)]"
+            className="inline-flex min-h-11 items-center px-2 text-sm font-semibold text-[var(--ink)] transition-colors outline-none hover:text-[var(--accent-deep)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--focus)]"
           >
-            Read the setup guide
+            See how it works
           </Link>
         </div>
       </div>
