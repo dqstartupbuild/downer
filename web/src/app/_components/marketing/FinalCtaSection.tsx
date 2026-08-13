@@ -23,8 +23,8 @@ export function FinalCtaSection({ releaseState }: FinalCtaSectionProps) {
             Clean up Downloads once. Keep it clean after that.
           </h2>
           <p className="mt-5 text-base leading-7 text-[var(--ink-muted)] sm:text-lg">
-            Set the folders you care about, choose how SortDock should move new
-            files, and leave the rest alone.
+            Pick the folders you care about, add file-type or keyword rules, and
+            choose whether SortDock asks first or moves quietly.
           </p>
         </div>
 

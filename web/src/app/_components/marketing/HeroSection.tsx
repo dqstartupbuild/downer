@@ -30,8 +30,9 @@ export function HeroSection({ releaseState }: HeroSectionProps) {
             Keep Downloads clean without babysitting every file.
           </p>
           <p className="mt-5 max-w-[400px] text-base leading-7 text-[var(--ink-muted)] sm:text-lg">
-            Choose a folder, set a few rules, and let new downloads land where
-            they belong. Ask first or move automatically.
+            Choose folders, sort by file type or words in the filename, and let
+            new downloads land where they belong. Ask first or move
+            automatically.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <ReleaseAction releaseState={releaseState} placement="hero" />

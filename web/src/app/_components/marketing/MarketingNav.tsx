@@ -38,6 +38,12 @@ export function MarketingNav({ releaseState }: MarketingNavProps) {
             How it works
           </Link>
           <Link
+            href="#keyword-rules"
+            className="hidden rounded-[8px] px-3 py-2 text-[var(--ink-muted)] transition-colors outline-none hover:text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--focus)] md:inline-flex"
+          >
+            Keyword rules
+          </Link>
+          <Link
             href="#privacy"
             className="hidden rounded-[8px] px-3 py-2 text-[var(--ink-muted)] transition-colors outline-none hover:text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--focus)] sm:inline-flex"
           >

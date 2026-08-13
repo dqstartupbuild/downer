@@ -1,8 +1,9 @@
-import { DownloadRail } from "~/app/_components/marketing/DownloadRail";
+import { KeywordRoutingExample } from "~/app/_components/marketing/KeywordRoutingExample";
 
 export function RulesSection() {
   return (
     <section
+      id="keyword-rules"
       aria-labelledby="rules-title"
       className="bg-[var(--window)] px-5 py-14 md:px-10 md:py-[88px] lg:px-[72px]"
     >
@@ -12,16 +13,17 @@ export function RulesSection() {
             id="rules-title"
             className="font-serif text-3xl leading-tight font-bold text-[var(--ink)] md:text-5xl"
           >
-            Rules you can read at a glance.
+            Invoices go to Finance.
           </h2>
           <p className="mt-5 max-w-[520px] text-base leading-7 text-[var(--ink-muted)] sm:text-lg">
-            No AppleScript. No folder-action setup. No hidden automation files.
-            Just file types and folders.
+            Match words like invoice, receipt, or 1099 in the filename. Capitals
+            and the file extension do not affect a match. SortDock checks rules
+            from top to bottom, then falls back to the file type.
           </p>
         </div>
 
         <div>
-          <DownloadRail />
+          <KeywordRoutingExample />
         </div>
       </div>
     </section>

@@ -24,7 +24,7 @@ export function BehaviorComparison() {
           >
             <div className="mx-auto max-w-sm rounded-[8px] border border-[var(--line-strong)] bg-[var(--panel)] p-4 shadow-[0_4px_12px_var(--dock-shadow)]">
               <p className="text-sm font-semibold text-[var(--ink)]">
-                Move &quot;invoice.pdf&quot; to &quot;PDFs&quot;?
+                Move &quot;invoice.pdf&quot; to &quot;Finance&quot;?
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {["Move", "Choose Folder", "Leave", "Ask Later"].map(
@@ -48,7 +48,7 @@ export function BehaviorComparison() {
           >
             <div className="space-y-3">
               {[
-                { fileName: "report.pdf", folder: "PDFs" },
+                { fileName: "Client Invoice.pdf", folder: "Finance" },
                 { fileName: "screenshot.png", folder: "Images" },
                 { fileName: "installer.dmg", folder: "Apps" },
               ].map((fileMove) => (

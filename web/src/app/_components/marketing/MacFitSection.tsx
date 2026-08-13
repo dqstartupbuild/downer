@@ -45,7 +45,7 @@ export function MacFitSection() {
 
           <ProductSlice
             title="Main window"
-            body="Choose the watched folder, add destinations, and keep rules short."
+            body="Choose destinations, order keyword rules, and keep file-type fallbacks simple."
           >
             <div className="grid gap-3 sm:grid-cols-[0.8fr_1.2fr]">
               <div className="rounded-[8px] border border-[var(--line)] bg-[var(--panel)] p-3">
@@ -57,7 +57,7 @@ export function MacFitSection() {
                 </p>
               </div>
               <div className="space-y-2">
-                {[".pdf to PDFs", ".png to Images", ".dmg to Apps"].map(
+                {["invoice to Finance", "tax to Taxes", ".pdf to PDFs"].map(
                   (rule) => (
                     <div
                       key={rule}

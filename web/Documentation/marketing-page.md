@@ -12,6 +12,7 @@ The web marketing page presents SortDock as a compact macOS utility for keeping 
 - `project-brief.md`
 - `coding-guidelines.md`
 - `AGENTS.md`
+- `app/mac/SortDock/Documentation/keyword-routing-and-custom-destinations.md`
 
 ## Implementation
 
@@ -41,6 +42,7 @@ web/src/app/_components/marketing/MarketingNav.tsx
 web/src/app/_components/marketing/HeroSection.tsx
 web/src/app/_components/marketing/HeroProductImage.tsx
 web/src/app/_components/marketing/DownloadRail.tsx
+web/src/app/_components/marketing/KeywordRoutingExample.tsx
 web/src/app/_components/marketing/LandingStripSection.tsx
 web/src/app/_components/marketing/BehaviorComparison.tsx
 web/src/app/_components/marketing/RulesSection.tsx
@@ -57,11 +59,12 @@ web/src/app/_components/marketing/ReleaseAction.tsx
 
 - The hero leads with the SortDock name, direct value copy, and an image-led product environment.
 - Download controls show `Coming soon` until the latest published GitHub release includes a Mac download, then link directly to that asset.
-- The routing rail appears in the hero, landing strip, and rules sections.
+- The routing rail appears in the hero and landing strip. The rules section uses a compact ordered keyword example to show how a filename match takes priority over the file-type fallback.
 - On narrow screens, routing examples stay in one compact three-lane row instead of turning into tall stacked cards.
 - Product examples introduce their purpose before the visual on phones and tablets, then return to the visual-first card layout on wider screens.
 - The hero uses separate phone, tablet, and desktop positioning so the copy and product window never collide or leave the viewport.
-- Ask First, Auto Move, delay, Ask Later, local preferences, no accounts, no cloud sync, and conflict-safe naming are all represented in plain copy.
+- Keyword matching, first-match priority, file-type fallback, custom destination folders, Ask First, Auto Move, delay, Ask Later, local preferences, no accounts, no cloud sync, and conflict-safe naming are all represented in plain copy.
+- Search and share metadata describe both file-type and filename-based routing.
 - Below-fold product slices use lightweight HTML and CSS mockups instead of a heavy animation or screenshot library.
 - Motion is limited to the routing interaction and respects `prefers-reduced-motion`. Content is visible without waiting for an entrance animation.
 

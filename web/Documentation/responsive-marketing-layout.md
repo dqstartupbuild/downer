@@ -11,6 +11,7 @@ The marketing page must feel composed on a small phone, a tablet, and a resizabl
 - `HeroSection.tsx` gives the first screen enough height for both the copy and product window. Phone, tablet, and desktop layouts use separate minimum heights and alignment rules.
 - `HeroProductImage.tsx` keeps the compact product view inside phone and tablet gutters. The wider sidebar and dock icon appear only when a desktop window has room for them.
 - `DownloadRail.tsx` preserves the three routing lanes in one row. Phone layouts use smaller cards and text while wider layouts restore the folder icons and roomier spacing.
+- `KeywordRoutingExample.tsx` keeps rule order, keyword phrases, and destination names on a shared three-column grid that remains readable on narrow screens.
 - `ProductSlice.tsx` puts the explanation before the visual on phones and tablets. Desktop cards keep the product visual first.
 - Section grids switch to side-by-side layouts only when their content has enough room. Smaller windows stack the same content without changing its meaning.
 - `MarketingFooter.tsx` uses a balanced two-column mobile layout and returns to a flexible row on wider screens.
@@ -30,6 +31,7 @@ The marketing page must feel composed on a small phone, a tablet, and a resizabl
 web/src/app/_components/marketing/HeroSection.tsx
 web/src/app/_components/marketing/HeroProductImage.tsx
 web/src/app/_components/marketing/DownloadRail.tsx
+web/src/app/_components/marketing/KeywordRoutingExample.tsx
 web/src/app/_components/marketing/ProductSlice.tsx
 web/src/app/_components/marketing/LandingStripSection.tsx
 web/src/app/_components/marketing/BehaviorComparison.tsx
