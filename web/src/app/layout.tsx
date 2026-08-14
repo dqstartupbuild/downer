@@ -1,5 +1,7 @@
 import "~/styles/globals.css";
 
+import { Analytics } from "@vercel/analytics/next";
+
 import { siteMetadata } from "~/lib/site/siteMetadata";
 
 export const metadata = siteMetadata;
@@ -9,7 +11,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
