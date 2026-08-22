@@ -15,8 +15,8 @@ SortDock keeps running from the menu bar after the main window closes. When the 
 ## Implementation
 
 - `SortDockApp` uses `Window("SortDock", id: "main")` for a single main window.
-- `SortDockAppDelegate` owns the shared `SortDockStore` and starts watching at app launch.
-- `DockVisibilityCoordinator` switches the app activation policy between `.regular` and `.accessory`.
+- `SortDockAppDelegate` owns the shared `SortDockStore`, starts watching only after setup, and observes the one main-window close event.
+- `AppPresentationCoordinator` is the single source of truth for `.onboarding`, `.menuBarOnly`, `.fullApp`, and temporary system-panel presentation states.
 - `MenuBarPopoverView` restores the Dock icon before calling `openWindow(id: "main")`.
 
 ## Source References

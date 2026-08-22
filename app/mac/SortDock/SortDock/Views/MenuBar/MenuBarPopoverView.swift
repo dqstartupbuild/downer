@@ -3,6 +3,7 @@ import SwiftUI
 struct MenuBarPopoverView: View {
     @Environment(\.openWindow) private var openWindow
     @EnvironmentObject private var store: SortDockStore
+    @EnvironmentObject private var presentation: AppPresentationCoordinator
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -20,6 +21,17 @@ struct MenuBarPopoverView: View {
                     .lineLimit(2)
             }
 
+            if let prompt = store.promptQueue.current {
+                Divider()
+                PendingMovePromptView(
+                    prompt: prompt,
+                    position: store.promptQueue.count,
+                    askLaterEnabled: store.settings.askLaterEnabled
+                ) { choice in
+                    store.resolveActivePrompt(choice)
+                }
+            }
+
             Divider()
 
             Button("Open SortDock") {
@@ -33,19 +45,24 @@ struct MenuBarPopoverView: View {
             Button(store.settings.isSortingEnabled ? "Pause Sorting" : "Resume Sorting") {
                 store.toggleSorting()
             }
+
+            Button("Run Setup Again") { openSortDock(showingSetup: true) }
+
+            Divider()
+            Button("Quit SortDock") { NSApp.terminate(nil) }
         }
         .padding(12)
         .frame(width: 300)
     }
 
-    private func openSortDock(showingHistory: Bool = false) {
-        DockVisibilityCoordinator.showDockIcon()
+    private func openSortDock(showingHistory: Bool = false, showingSetup: Bool = false) {
+        presentation.showFullApp()
 
         if showingHistory {
             store.showHistory()
         }
+        if showingSetup { store.runSetupAgain() }
 
         openWindow(id: "main")
-        DockVisibilityCoordinator.activate()
     }
 }

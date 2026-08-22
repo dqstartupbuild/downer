@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 3,
+  "appName": "SortDock",
+  "themeId": "sortdock-navy",
+  "fontId": "system-sans",
+  "connectedCanvas": true,
+  "locales": [
+    "en"
+  ],
+  "locale": "en",
+  "device": "mac",
+  "orientation": "landscape",
+  "appIcon": "",
+  "slidesByDevice": {
+    "mac": [
+      {
+        "id": "sortdock-main",
+        "layout": "hero",
+        "label": {
+          "en": "SORTDOCK"
+        },
+        "headline": {
+          "en": "Your downloads,\nsorted your way"
+        },
+        "screenshot": "/screenshots/apple/mac/en/01-main.jpeg"
+      },
+      {
+        "id": "sortdock-keywords",
+        "layout": "window-bottom",
+        "label": {
+          "en": "ROUTING RULES"
+        },
+        "headline": {
+          "en": "See every route\nat a glance"
+        },
+        "screenshot": "/screenshots/apple/mac/en/01-main.jpeg"
+      },
+      {
+        "id": "sortdock-ask",
+        "layout": "window-top",
+        "label": {
+          "en": "STAY IN CONTROL"
+        },
+        "headline": {
+          "en": "Ask first.\nMove when ready."
+        },
+        "screenshot": "/screenshots/apple/mac/en/01-main.jpeg",
+        "inverted": true
+      },
+      {
+        "id": "sortdock-auto",
+        "layout": "hero",
+        "label": {
+          "en": "AUTO MOVE"
+        },
+        "headline": {
+          "en": "Automatic when\nyou want it"
+        },
+        "screenshot": "/screenshots/apple/mac/en/01-main.jpeg"
+      },
+      {
+        "id": "sortdock-pause",
+        "layout": "window-top",
+        "label": {
+          "en": "IN YOUR CONTROL"
+        },
+        "headline": {
+          "en": "Pause sorting\nanytime"
+        },
+        "screenshot": "/screenshots/apple/mac/en/01-main.jpeg",
+        "inverted": true
+      }
+    ]
+  }
+}

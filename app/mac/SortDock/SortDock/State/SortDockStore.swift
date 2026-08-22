@@ -45,7 +45,7 @@ final class SortDockStore: ObservableObject {
     private let folderPicker = FolderPicker()
     private let mover = FileMover()
     private let persistence = SettingsPersistence()
-    private let promptCoordinator = PromptCoordinator()
+    let promptQueue = PendingMovePromptQueue()
     private var folderAccess: FolderAccess?
     private var knownFilePaths = Set<String>()
     private var scanTask: Task<Void, Never>?
@@ -54,7 +54,13 @@ final class SortDockStore: ObservableObject {
 
     init() {
         let configuration = persistence.load()
-        settings = configuration.settings
+        var restoredSettings = configuration.settings
+        if restoredSettings.onboardingVersion == 0,
+           restoredSettings.watchedFolderBookmark != nil,
+           !configuration.destinations.isEmpty {
+            restoredSettings.onboardingVersion = 1
+        }
+        settings = restoredSettings
         destinations = configuration.destinations
         rules = configuration.rules
         keywordRules = configuration.keywordRules
@@ -333,6 +339,10 @@ final class SortDockStore: ObservableObject {
 
     func start() {
         AppearanceCoordinator.apply(settings.appearanceMode)
+        guard settings.onboardingVersion >= 1 else {
+            statusMessage = "Finish setup to start sorting."
+            return
+        }
         updateLoginItem()
         resolveFolderAccess()
         restartWatcher(resetKnownFiles: true)
@@ -350,6 +360,55 @@ final class SortDockStore: ObservableObject {
 
     func toggleSorting() {
         settings.isSortingEnabled.toggle()
+    }
+
+    var needsOnboarding: Bool { settings.onboardingVersion < 1 }
+
+    func advanceOnboarding() {
+        settings.onboardingStep = min(settings.onboardingStep + 1, 6)
+    }
+
+    func goBackInOnboarding() {
+        settings.onboardingStep = max(settings.onboardingStep - 1, 1)
+    }
+
+    func completeOnboarding() {
+        guard settings.watchedFolderBookmark != nil else {
+            statusMessage = "Choose a folder before starting."
+            settings.onboardingStep = 2
+            return
+        }
+        settings.onboardingVersion = 1
+        settings.onboardingStep = 6
+        start()
+    }
+
+    func runSetupAgain() {
+        settings.onboardingStep = 1
+    }
+
+    func resolveActivePrompt(_ choice: MovePromptChoice) {
+        guard let prompt = promptQueue.resolveCurrent() else { return }
+        let fileURL = URL(fileURLWithPath: prompt.sourcePath)
+        guard fileManager.fileExists(atPath: fileURL.path) else {
+            recordMissing(fileURL: fileURL, activityID: prompt.activityID)
+            return
+        }
+        guard let destination = destinations.first(where: { $0.id == prompt.destinationID }) else {
+            recordFailed(fileURL: fileURL, destination: nil, activityID: prompt.activityID)
+            statusMessage = "Choose a new destination for \(prompt.fileName)."
+            return
+        }
+        switch choice {
+        case .move:
+            performMove(fileURL: fileURL, destination: destination, activityID: prompt.activityID)
+        case .leave:
+            recordLeft(fileURL: fileURL, destination: destination, activityID: prompt.activityID)
+        case .askLater:
+            scheduleAskLater(fileURL, destination: destination, activityID: prompt.activityID)
+        case .chooseFolder:
+            chooseFolderForPendingPrompt(fileURL: fileURL, destination: destination, activityID: prompt.activityID)
+        }
     }
 
     func canChooseFolderForActivity(_ activity: ActivityRecord) -> Bool {
@@ -512,7 +571,7 @@ final class SortDockStore: ObservableObject {
             AppearanceCoordinator.apply(settings.appearanceMode)
         }
 
-        if settings.runAtLogin != oldValue.runAtLogin {
+        if settings.runAtLogin != oldValue.runAtLogin, settings.onboardingVersion >= 1 {
             updateLoginItem()
         }
 
@@ -621,34 +680,37 @@ final class SortDockStore: ObservableObject {
         case .autoMove:
             performMove(fileURL: fileURL, destination: destination, activityID: activityID)
         case .askFirst:
-            let choice = promptCoordinator.askForMove(
+            let recordID = activityID ?? UUID()
+            let waitingRecord = ActivityRecord(
+                id: recordID,
+                message: "Waiting for a decision about \(fileURL.lastPathComponent).",
+                status: .waiting,
                 fileName: fileURL.lastPathComponent,
-                destinationName: destination.name,
-                watchedFolderName: watchedFolderURL.lastPathComponent,
-                askLaterEnabled: settings.askLaterEnabled
+                sourcePath: fileURL.path,
+                currentPath: fileURL.path,
+                destinationID: destination.id,
+                destinationName: destination.name
             )
-
-            switch choice {
-            case .move:
-                performMove(fileURL: fileURL, destination: destination, activityID: activityID)
-            case .chooseFolder:
-                if let folderURL = folderPicker.chooseFolder(
-                    message: "Choose where this file should go.",
-                    prompt: "Choose"
-                ) {
-                    performMove(
-                        fileURL: fileURL,
-                        destination: destination,
-                        customFolderURL: folderURL,
-                        activityID: activityID
-                    )
-                }
-            case .leave:
-                recordLeft(fileURL: fileURL, destination: destination, activityID: activityID)
-            case .askLater:
-                scheduleAskLater(fileURL, destination: destination, activityID: activityID)
-            }
+            upsertActivity(waitingRecord)
+            promptQueue.enqueue(PendingMovePrompt(
+                fileURL: fileURL,
+                watchedFolderName: watchedFolderURL.lastPathComponent,
+                destination: destination,
+                activityID: recordID
+            ))
+            statusMessage = "Waiting for your choice."
         }
+    }
+
+    private func chooseFolderForPendingPrompt(fileURL: URL, destination: DestinationFolder, activityID: UUID) {
+        guard let folderURL = folderPicker.chooseFolder(
+            message: "Choose where this file should go.",
+            prompt: "Choose"
+        ) else {
+            scheduleAskLater(fileURL, destination: destination, activityID: activityID)
+            return
+        }
+        performMove(fileURL: fileURL, destination: destination, customFolderURL: folderURL, activityID: activityID)
     }
 
     private func recordFailed(fileURL: URL, destination: DestinationFolder?, activityID: UUID?) {

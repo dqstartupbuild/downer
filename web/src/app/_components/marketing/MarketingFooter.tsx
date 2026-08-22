@@ -23,6 +23,10 @@ export function MarketingFooter({ releaseState }: MarketingFooterProps) {
         >
           GitHub
         </a>
+        <a className="font-semibold text-[var(--ink)] transition-colors hover:text-[var(--accent-deep)]" href="/support">Support</a>
+        <a className="font-semibold text-[var(--ink)] transition-colors hover:text-[var(--accent-deep)]" href="/privacy">Privacy</a>
+        <a className="font-semibold text-[var(--ink)] transition-colors hover:text-[var(--accent-deep)]" href="/terms">Terms</a>
+        <a className="font-semibold text-[var(--ink)] transition-colors hover:text-[var(--accent-deep)]" href="/acknowledgements">Acknowledgements</a>
       </div>
     </footer>
   );

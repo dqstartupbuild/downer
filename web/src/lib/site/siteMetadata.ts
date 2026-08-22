@@ -19,10 +19,35 @@ export const siteMetadata: Metadata = {
     "keyword file routing",
   ],
   alternates: { canonical: "/" },
-  icons: [
-    { rel: "icon", url: "/favicon.ico" },
-    { rel: "apple-touch-icon", url: "/brand/icon.png" },
-  ],
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icons/sortdock-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/sortdock-192.png", sizes: "192x192", type: "image/png" },
+      {
+        url: "/icons/sortdock-dark-32.png",
+        sizes: "32x32",
+        type: "image/png",
+        media: "(prefers-color-scheme: dark)",
+      },
+      {
+        url: "/icons/sortdock-dark-192.png",
+        sizes: "192x192",
+        type: "image/png",
+        media: "(prefers-color-scheme: dark)",
+      },
+    ],
+    shortcut: "/favicon.ico",
+    apple: [
+      { url: "/icons/sortdock-180.png", sizes: "180x180", type: "image/png" },
+      {
+        url: "/icons/sortdock-dark-180.png",
+        sizes: "180x180",
+        type: "image/png",
+        media: "(prefers-color-scheme: dark)",
+      },
+    ],
+  },
   openGraph: {
     type: "website",
     siteName: "SortDock",
