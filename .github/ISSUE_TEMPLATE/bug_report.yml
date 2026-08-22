@@ -1,0 +1,46 @@
+name: Bug report
+description: Tell us about something that is not working.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to help improve SortDock. Please do not include security issues here. Use the private security report link instead.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Tell us what you expected and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: SortDock version or commit
+      placeholder: For example, 1.0.0 or a commit hash
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where did you see this?
+      options:
+        - Mac app
+        - Website
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Anything else?
+      description: Screenshots, crash details, and logs can help.

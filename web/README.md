@@ -2,6 +2,12 @@
 
 The `web` directory contains SortDock's Next.js marketing site.
 
+## License
+
+The website source code is available under the [MIT License](../LICENSE). The
+SortDock name, logos, icons, and other brand assets are not covered by that
+license. See [BRAND_ASSETS.md](../BRAND_ASSETS.md).
+
 ## Local development
 
 ```sh
