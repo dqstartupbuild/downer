@@ -39,4 +39,20 @@ struct SortDockTests {
         #expect(destinationID == documents.id)
     }
 
+    @Test func appStoreVersionComparisonUsesNumericComponents() {
+        #expect(AppStoreVersionComparator.isNewer("1.10", than: "1.9"))
+        #expect(AppStoreVersionComparator.isNewer("2.0", than: "1.9.9"))
+        #expect(!AppStoreVersionComparator.isNewer("1.0", than: "1.0"))
+        #expect(!AppStoreVersionComparator.isNewer("1.0.1", than: "1.1"))
+    }
+
+    @Test func appStoreLookupResponseDecodesAppleListing() throws {
+        let data = Data("""
+        {"resultCount":1,"results":[{"version":"1.2","trackViewUrl":"https://apps.apple.com/us/app/sortdock/id123"}]}
+        """.utf8)
+        let response = try JSONDecoder().decode(AppStoreLookupResponse.self, from: data)
+        #expect(response.results.first?.version == "1.2")
+        #expect(response.results.first?.trackViewUrl.absoluteString == "https://apps.apple.com/us/app/sortdock/id123")
+    }
+
 }

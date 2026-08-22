@@ -29,7 +29,7 @@ Status: build 1.0 (3) uploaded and processing; listing configured in App Store C
 - Sandbox: enabled with app-scope bookmarks and user-selected read/write folders
 - Privacy manifest: bundled; UserDefaults reason `CA92.1`; tracking false
 - Export compliance: `ITSAppUsesNonExemptEncryption=NO`
-- Copyright: `© 2026 DaQuan Louden. All rights reserved.`
+- Copyright: `© 2026 FollowUs AI LLC`
 - App icon: Icon Composer source with Default, Dark, and tintable Mono/glass appearances; legacy Mac sizes remain populated for earlier supported systems. Build 3 replaces the unwanted automatic blue fill with System Light for Default and System Dark for Dark while leaving Mono system-rendered.
 
 ## Website

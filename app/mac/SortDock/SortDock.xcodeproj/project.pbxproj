@@ -337,7 +337,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 DaQuan Louden. All rights reserved.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 FollowUs AI LLC";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -372,7 +372,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 DaQuan Louden. All rights reserved.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "© 2026 FollowUs AI LLC";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -393,6 +393,7 @@
 		AD7FB3903038FF30009CB233 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 525ZD896G4;
@@ -401,19 +402,19 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.followusai.SortDockTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SortDock.app/Contents/MacOS/SortDock";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SortDock.app/Contents/MacOS/SortDock";
 			};
 			name = Debug;
 		};
 		AD7FB3913038FF30009CB233 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 525ZD896G4;
@@ -422,13 +423,12 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.followusai.SortDockTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SortDock.app/Contents/MacOS/SortDock";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SortDock.app/Contents/MacOS/SortDock";
 			};
 			name = Release;
 		};

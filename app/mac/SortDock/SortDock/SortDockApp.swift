@@ -22,6 +22,7 @@ struct SortDockApp: App {
             }
                 .environmentObject(appDelegate.store)
                 .environmentObject(appDelegate.presentation)
+                .environmentObject(appDelegate.updateChecker)
                 .frame(minWidth: 620, minHeight: 460)
         }
         .defaultSize(width: 680, height: 520)
@@ -30,6 +31,7 @@ struct SortDockApp: App {
             MenuBarPopoverView()
                 .environmentObject(appDelegate.store)
                 .environmentObject(appDelegate.presentation)
+                .environmentObject(appDelegate.updateChecker)
         }
     }
 }

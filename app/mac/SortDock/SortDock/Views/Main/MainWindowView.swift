@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MainWindowView: View {
     @EnvironmentObject private var store: SortDockStore
+    @EnvironmentObject private var updateChecker: AppStoreUpdateChecker
     @State private var destinationEditorDestination: DestinationFolder?
     @State private var isDestinationEditorPresented = false
     @State private var keywordRuleEditorPresentation: KeywordRuleEditorPresentation?
@@ -11,6 +12,10 @@ struct MainWindowView: View {
     var body: some View {
         VStack(spacing: 0) {
             StatusStripView()
+            if let update = updateChecker.availableUpdate {
+                MainWindowUpdateNoticeView(update: update)
+                Divider()
+            }
             Divider()
             ScrollView(.vertical) {
                 HStack(alignment: .top, spacing: 16) {

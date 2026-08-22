@@ -3,11 +3,15 @@ import AppKit
 final class SortDockAppDelegate: NSObject, NSApplicationDelegate {
     let store = SortDockStore()
     let presentation = AppPresentationCoordinator()
+    let updateChecker = AppStoreUpdateChecker()
     private var windowObserver: NSObjectProtocol?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         presentation.beginLaunch(needsOnboarding: store.needsOnboarding)
         store.start()
+        Task { @MainActor [updateChecker] in
+            await updateChecker.checkForUpdate()
+        }
         let presentation = presentation
         windowObserver = NotificationCenter.default.addObserver(
             forName: NSWindow.willCloseNotification,
@@ -25,6 +29,12 @@ final class SortDockAppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+    }
+
+    func applicationDidBecomeActive(_ notification: Notification) {
+        Task { @MainActor [updateChecker] in
+            await updateChecker.checkForUpdate()
+        }
     }
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {

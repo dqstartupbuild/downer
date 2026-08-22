@@ -4,9 +4,15 @@ struct MenuBarPopoverView: View {
     @Environment(\.openWindow) private var openWindow
     @EnvironmentObject private var store: SortDockStore
     @EnvironmentObject private var presentation: AppPresentationCoordinator
+    @EnvironmentObject private var updateChecker: AppStoreUpdateChecker
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
+            if let update = updateChecker.availableUpdate {
+                MenuBarUpdateNoticeView(update: update)
+                Divider()
+            }
+
             HStack {
                 StatusPillView()
                 Spacer()
