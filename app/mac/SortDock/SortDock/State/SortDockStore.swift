@@ -267,8 +267,9 @@ final class SortDockStore: ObservableObject {
                 return
             }
 
+            let bookmark = try SecurityScopedBookmarkFactory.make(for: folderURL)
             destinations[index].folderPath = folderURL.path
-            destinations[index].folderBookmark = try SecurityScopedBookmarkFactory.make(for: folderURL)
+            destinations[index].folderBookmark = bookmark
             statusMessage = "Reconnected \(destination.name)."
         } catch {
             statusMessage = "Could not save access to that folder."

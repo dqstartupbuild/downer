@@ -7,5 +7,6 @@
 - [x] App Store Connect record and available listing fields completed in Safari.
 - [x] Five stylized screenshots built from the running app, sanitized, and validated at 2880 x 1800 without alpha.
 - [x] Five screenshots are currently present in App Store Connect. No further screenshot changes will be made; the owner chose to manage them manually.
-- [x] Archive validated and uploaded by Xcode Organizer.
-- [ ] Build 1.0 (3) with the neutral Default icon uploaded successfully and is processing. Select it after processing. Do not submit for review.
+- [x] The previous 1.0 submission was removed from review and now shows Developer Rejected.
+- [x] Build 1.0 (5) archived as a universal macOS app, validated, and uploaded by Xcode Organizer on 2026-08-26.
+- [ ] Wait for build 1.0 (5) to finish processing, then select it before creating a new review submission.

@@ -3,7 +3,6 @@ import SwiftUI
 struct OnboardingView: View {
     @EnvironmentObject private var store: SortDockStore
     @EnvironmentObject private var presentation: AppPresentationCoordinator
-    @State private var destinationName = "Documents"
     @State private var keyword = "invoice"
     @State private var selectedDestinationID: UUID?
     @State private var automaticMoveAcknowledged = false
@@ -54,11 +53,16 @@ struct OnboardingView: View {
             }
         case 3:
             VStack(alignment: .leading, spacing: 12) {
-                Text("Create your first destination").font(.title.weight(.semibold))
-                Text("This is where matching files will go. You can change it later.")
-                TextField("Folder name", text: $destinationName)
-                Picker("Destination", selection: $selectedDestinationID) {
-                    ForEach(store.destinations) { Text($0.name).tag($0.id as UUID?) }
+                Text("Choose your first destination").font(.title.weight(.semibold))
+                Text("This is where matching files will go. Choose a folder or make one in Finder. You can change it later.")
+                Button("Choose Folder...") {
+                    store.chooseDestinationFolder()
+                    selectedDestinationID = store.selectedDestinationID
+                }
+                if let selectedDestinationID,
+                   let destination = store.destinations.first(where: { $0.id == selectedDestinationID }) {
+                    Text(destination.name)
+                        .font(.headline)
                 }
             }
         case 4:
@@ -120,6 +124,7 @@ struct OnboardingView: View {
     private var canContinue: Bool {
         switch store.settings.onboardingStep {
         case 2: return store.settings.watchedFolderBookmark != nil
+        case 3: return selectedDestinationID != nil
         case 4: return !keyword.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && selectedDestinationID != nil
         case 5: return store.settings.moveBehavior != .autoMove || automaticMoveAcknowledged
         default: return true
@@ -129,10 +134,6 @@ struct OnboardingView: View {
     private func continueSetup() {
         switch store.settings.onboardingStep {
         case 3:
-            if !destinationName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                store.addDestination(named: destinationName)
-                selectedDestinationID = store.selectedDestinationID
-            }
             store.advanceOnboarding()
         case 4:
             if let selectedDestinationID {

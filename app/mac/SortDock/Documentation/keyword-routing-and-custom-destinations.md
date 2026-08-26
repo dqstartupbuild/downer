@@ -36,14 +36,14 @@ For example, `Invoice`, `invoice`, and `INVOICE` all match `Client Invoice.PDF`.
 
 The add menu in `Destinations` offers two choices:
 
-- `Choose Existing Folder...` opens the native macOS folder picker and creates a bookmark-backed destination.
+- `Choose or Create Folder...` opens the native macOS folder picker and creates a bookmark-backed destination.
 - `New Folder in <watched folder>...` keeps the existing behavior and creates a named destination inside the watched folder when first needed.
 
 For a picked folder, `DestinationFolder` stores its display name, path, and security-scoped bookmark. The bookmark is encoded with the rest of the app configuration. `DestinationFolderAccessResolver` resolves the bookmark when the app needs to check or use the destination.
 
 SortDock starts security-scoped access only while checking or moving to a destination and stops it immediately afterward. If macOS marks a bookmark as stale, the app replaces it with a fresh bookmark after resolving it successfully for a move.
 
-The destination list shows `Folder is missing` or `Missing or unavailable` when a custom destination can no longer be used. `Choose Folder Again...` in that destination's menu lets the user reconnect it. Destination pickers also mark unavailable folders.
+The destination list shows `Folder is missing` or `Missing or unavailable` when a custom destination can no longer be used. `Choose Folder...` in every destination's menu opens Finder to change or reconnect it, including destinations that originally lived inside the watched folder. Destination pickers also mark unavailable folders.
 
 When the chosen route has a missing or inaccessible destination, SortDock leaves the file in the watched folder and records a plain-language failure. It does not fall through to a lower-priority rule.
 

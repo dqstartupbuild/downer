@@ -34,9 +34,7 @@ struct DestinationRowView: View {
 
             Menu {
                 Button("Rename", action: onRename)
-                if destination.usesCustomLocation {
-                    Button("Choose Folder Again...", action: onReconnect)
-                }
+                Button("Choose Folder...", action: onReconnect)
                 Button("Remove", role: .destructive, action: onDelete)
             } label: {
                 Image(systemName: "ellipsis.circle")

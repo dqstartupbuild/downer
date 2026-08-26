@@ -6,6 +6,7 @@ final class FolderPicker {
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
+        panel.canCreateDirectories = true
         panel.message = message
         panel.prompt = prompt
 

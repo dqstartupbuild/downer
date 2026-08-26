@@ -7,7 +7,7 @@ struct DestinationAddMenu: View {
 
     var body: some View {
         Menu {
-            Button("Choose Existing Folder...", action: onChooseFolder)
+            Button("Choose or Create Folder...", action: onChooseFolder)
             Button("New Folder in \(watchedFolderName)...", action: onCreateFolder)
         } label: {
             Image(systemName: "plus")
